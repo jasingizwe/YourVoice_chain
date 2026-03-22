@@ -60,30 +60,30 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="min-h-screen bg-[#ece9e1] flex items-center justify-center p-4">
-      <div className="w-full max-w-md rounded-[24px] border border-[#e8e4dc] bg-white p-7 shadow-[0_22px_40px_-30px_rgba(0,0,0,0.45)]">
+    <div className="min-h-screen bg-[#fdf2f8] flex items-center justify-center p-4">
+      <div className="w-full max-w-md rounded-[24px] border border-[#fbcfe8] bg-white p-7 shadow-[0_22px_40px_-30px_rgba(192,57,75,0.15)]">
         <div className="mb-6 text-center">
           <div className="mb-3 flex justify-center">
-            <Brand size="lg" />
+            <Brand size="lg" showText={false} />
           </div>
-          <h1 className="text-2xl font-heading font-semibold text-[#1f1e1a]">Set new password</h1>
+          <h1 className="text-2xl font-semibold text-[#1a1a1a]">Set new password</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="token" className="text-[#2b2924]">Reset Token</Label>
+            <Label htmlFor="token" className="text-[#1a1a1a]">Reset Token</Label>
             <Input
               id="token"
               value={token}
               onChange={e => setToken(e.target.value)}
               placeholder="Paste reset token"
               required
-              className="mt-1 border-[#ddd8cf]"
+              className="mt-1 border-[#fbcfe8] focus-visible:ring-[#c0394b]"
             />
           </div>
 
           <div>
-            <Label htmlFor="password" className="text-[#2b2924]">New Password</Label>
+            <Label htmlFor="password" className="text-[#1a1a1a]">New Password</Label>
             <div className="relative mt-1">
               <Input
                 id="password"
@@ -93,12 +93,12 @@ export default function ResetPassword() {
                 placeholder="********"
                 required
                 minLength={6}
-                className="border-[#ddd8cf] pr-10"
+                className="border-[#fbcfe8] pr-10 focus-visible:ring-[#c0394b]"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#817a70] hover:text-[#2b2924]"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#aaa] hover:text-[#c0394b]"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -106,7 +106,7 @@ export default function ResetPassword() {
           </div>
 
           <div>
-            <Label htmlFor="confirm" className="text-[#2b2924]">Confirm Password</Label>
+            <Label htmlFor="confirm" className="text-[#1a1a1a]">Confirm Password</Label>
             <Input
               id="confirm"
               type="password"
@@ -115,13 +115,13 @@ export default function ResetPassword() {
               placeholder="********"
               required
               minLength={6}
-              className="mt-1 border-[#ddd8cf]"
+              className="mt-1 border-[#fbcfe8] focus-visible:ring-[#c0394b]"
             />
           </div>
 
           <Button
             type="submit"
-            className="w-full rounded-lg bg-[#efc37f] text-[#1f1e1a] hover:bg-[#e8b868]"
+            className="w-full rounded-lg bg-[#c0394b] text-white hover:bg-[#a8303f]"
             disabled={submitting}
           >
             {submitting ? 'Updating...' : 'Update Password'}

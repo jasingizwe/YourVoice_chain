@@ -10,6 +10,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Benefits from "./pages/Benefits";
 import HowItWorks from "./pages/HowItWorks";
+import Resources from "./pages/Resources";
 import DashboardLayout from "./components/DashboardLayout";
 import DashboardRouter from "./pages/dashboard/DashboardRouter";
 import CasesList from "./pages/dashboard/CasesList";
@@ -71,6 +72,7 @@ const App = () => (
             <Route path="/guide/benefits" element={<Navigate to="/guide/features" replace />} />
             <Route path="/guide/features" element={<ProtectedRoute><Benefits /></ProtectedRoute>} />
             <Route path="/guide/how-it-works" element={<ProtectedRoute><HowItWorks /></ProtectedRoute>} />
+            <Route path="/resources" element={<Resources />} />
             <Route path="/dashboard/*" element={<DashboardRoutes />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

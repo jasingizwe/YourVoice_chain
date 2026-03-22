@@ -35,6 +35,11 @@ create table if not exists evidence (
   evidence_type text not null default 'document',
   file_name text,
   ipfs_hash text,
+  ipfs_status text not null default 'pending',
+  ipfs_attempts int not null default 0,
+  ipfs_last_error text,
+  ipfs_last_attempt_at timestamptz,
+  local_path text,
   blockchain_tx text,
   uploaded_at timestamptz not null default now(),
   deleted_at timestamptz,
@@ -43,6 +48,11 @@ create table if not exists evidence (
 
 alter table evidence add column if not exists deleted_at timestamptz;
 alter table evidence add column if not exists deleted_by uuid references users(id) on delete set null;
+alter table evidence add column if not exists ipfs_status text default 'pending';
+alter table evidence add column if not exists ipfs_attempts int default 0;
+alter table evidence add column if not exists ipfs_last_error text;
+alter table evidence add column if not exists ipfs_last_attempt_at timestamptz;
+alter table evidence add column if not exists local_path text;
 
 create table if not exists access_grants (
   id uuid primary key default gen_random_uuid(),

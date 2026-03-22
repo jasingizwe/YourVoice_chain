@@ -10,6 +10,7 @@ import {
   MoreHorizontal,
   Plus,
   Search,
+  Wallet,
   X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -86,13 +87,97 @@ export default function SurvivorDashboard() {
   );
 
   const completion = stats.total ? Math.round((stats.closed / stats.total) * 100) : 0;
+  const hasMetaMask = typeof window !== 'undefined' && !!window.ethereum;
+  const [guideOpen, setGuideOpen] = useState(false);
+
+  const steps = [
+    {
+      number: '1',
+      title: 'Install MetaMask',
+      body: 'MetaMask is a free browser extension. Install it for Chrome, Firefox, or Brave from the official site.',
+      link: { label: 'metamask.io', href: 'https://metamask.io/download/' },
+    },
+    {
+      number: '2',
+      title: 'Create your wallet',
+      body: 'Open MetaMask and click "Create a new wallet". Write down your secret recovery phrase and keep it safe.',
+    },
+    {
+      number: '3',
+      title: 'Switch to Sepolia Testnet',
+      body: 'In MetaMask, click the network dropdown (top left) → "Show test networks" → select "Sepolia".',
+    },
+    {
+      number: '4',
+      title: 'Get free test ETH',
+      body: 'You need a small amount of Sepolia ETH to pay for transactions. It is completely free.',
+      link: { label: 'sepoliafaucet.com', href: 'https://sepoliafaucet.com' },
+    },
+    {
+      number: '5',
+      title: 'You\'re ready',
+      body: 'When you submit a case with evidence, MetaMask will ask you to approve the transaction. This anchors your evidence on the blockchain.',
+    },
+  ];
 
   return (
     <div className="mx-auto max-w-6xl animate-fade-in">
+
+      {/* MetaMask setup banner */}
+      {!hasMetaMask && (
+        <div className="mb-5 rounded-2xl border border-[#fbcfe8] bg-[#fdf2f8] p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f9c8d4]">
+                <Wallet className="h-5 w-5 text-[#c0394b]" />
+              </div>
+              <div>
+                <p className="font-semibold text-[#1a1a1a]">MetaMask not detected</p>
+                <p className="text-sm text-[#666]">
+                  Install MetaMask to anchor your evidence on the blockchain and prove its authenticity.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setGuideOpen(g => !g)}
+              className="shrink-0 rounded-lg bg-[#c0394b] px-4 py-2 text-sm font-semibold text-white hover:bg-[#a8303f] transition-colors"
+            >
+              {guideOpen ? 'Hide guide' : 'Setup guide'}
+            </button>
+          </div>
+
+          {guideOpen && (
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 border-t border-[#fbcfe8] pt-4">
+              {steps.map(step => (
+                <div key={step.number} className="rounded-xl bg-white border border-[#fbcfe8] p-4">
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#c0394b] text-xs font-bold text-white">
+                      {step.number}
+                    </span>
+                    <p className="font-semibold text-sm text-[#1a1a1a]">{step.title}</p>
+                  </div>
+                  <p className="text-xs text-[#666] leading-relaxed">{step.body}</p>
+                  {step.link && (
+                    <a
+                      href={step.link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 inline-block text-xs font-semibold text-[#c0394b] hover:underline"
+                    >
+                      {step.link.label} →
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <section className="rounded-[30px] border border-[#d9dbdf] bg-[linear-gradient(165deg,#f7f6f2_0%,#f4f0e7_60%,#ece3ce_100%)] p-5 shadow-[0_28px_65px_-45px_rgba(25,35,45,0.45)] md:p-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-heading font-semibold text-[#1f2328]">Hello, {user?.email?.split('@')[0] || 'there'}</h1>
+            <h1 className="text-3xl font-heading font-semibold text-[#1f2328]">Hello, {user?.user_metadata?.full_name?.trim() || user?.email?.split('@')[0] || 'there'}</h1>
             <p className="mt-1 text-sm text-[#666760]">Track your cases and progress in one clean dashboard.</p>
           </div>
           <div className="relative flex items-center gap-2">
@@ -105,12 +190,12 @@ export default function SurvivorDashboard() {
               <Bell className="h-4 w-4" />
             </button>
             {unreadCount > 0 && (
-              <span className="absolute -right-1 -top-1 rounded-full bg-[#1f2328] px-1.5 py-0.5 text-[10px] text-white">
+              <span className="absolute -right-1 -top-1 rounded-full bg-[#c0394b] px-1.5 py-0.5 text-[10px] text-white">
                 {unreadCount}
               </span>
             )}
             <Link to="/dashboard/cases/new">
-              <Button className="rounded-full bg-[#efc37f] px-5 text-[#1f1e1a] hover:bg-[#e7b86e]">
+              <Button className="rounded-full bg-[#c0394b] px-5 text-white hover:bg-[#a8303f]">
                 <Plus className="mr-2 h-4 w-4" />
                 New Case
               </Button>
@@ -142,7 +227,7 @@ export default function SurvivorDashboard() {
                         key={item.id}
                         type="button"
                         onClick={() => markNotificationAsRead(item.id)}
-                        className={`w-full rounded-xl border p-3 text-left ${item.is_read ? 'border-[#eee8db] bg-[#fdfbf6]' : 'border-[#e3dac8] bg-[#fff7ea]'}`}
+                        className={`w-full rounded-xl border p-3 text-left ${item.is_read ? 'border-[#eee8db] bg-[#fdfbf6]' : 'border-[#f9c8d4] bg-[#fce8ec]'}`}
                       >
                         <div className="flex items-start justify-between gap-2">
                           <p className="text-sm font-medium text-[#22262b]">{item.title}</p>
@@ -232,19 +317,19 @@ export default function SurvivorDashboard() {
               <h3 className="text-base font-heading font-medium text-[#1f2328]">Progress</h3>
               <p className="mt-1 text-sm text-[#6f706a]">Overall case completion this period.</p>
               <div className="mt-4 h-3 overflow-hidden rounded-full bg-[#e7e0d2]">
-                <div className="h-full rounded-full bg-[#efc37f]" style={{ width: `${completion}%` }} />
+                <div className="h-full rounded-full bg-[#c0394b]" style={{ width: `${completion}%` }} />
               </div>
               <p className="mt-2 text-sm font-medium text-[#5a4a37]">{completion}% completed</p>
             </div>
 
-            <div className="rounded-2xl border border-[#dad6cc] bg-[#1f2328] p-5 text-white">
+            <div className="rounded-2xl border border-[#dad6cc] bg-[#111] p-5 text-white">
               <h3 className="text-base font-heading font-medium">Quick Actions</h3>
               <div className="mt-3 space-y-2 text-sm text-white/85">
                 <p>- Open a case to review details.</p>
                 <p>- Keep your case information up to date.</p>
               </div>
               <Link to="/dashboard/cases" className="mt-4 inline-flex">
-                <Button className="rounded-full bg-[#efc37f] text-[#1f1e1a] hover:bg-[#e7b86e]">
+                <Button className="rounded-full bg-[#c0394b] text-white hover:bg-[#a8303f]">
                   View My Cases
                 </Button>
               </Link>

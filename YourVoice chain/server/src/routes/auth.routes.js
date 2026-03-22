@@ -45,6 +45,19 @@ const updateWalletSchema = z.object({
   walletAddress: z.string().min(8).max(128).nullable(),
 });
 
+const COOKIE_NAME = 'auth_token';
+const isProd = process.env.NODE_ENV === 'production';
+
+function setAuthCookie(res, token) {
+  res.cookie(COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? 'strict' : 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    path: '/',
+  });
+}
+
 export const authRouter = Router();
 
 authRouter.post('/register', async (req, res, next) => {
@@ -76,6 +89,7 @@ authRouter.post('/register', async (req, res, next) => {
       details: { role: user.role },
     });
 
+    setAuthCookie(res, token);
     return res.status(201).json({
       user: {
         id: user.id,
@@ -83,7 +97,6 @@ authRouter.post('/register', async (req, res, next) => {
         email: user.email,
         role: user.role,
       },
-      token,
     });
   } catch (err) {
     return next(err);
@@ -116,6 +129,7 @@ authRouter.post('/login', async (req, res, next) => {
       details: null,
     });
 
+    setAuthCookie(res, token);
     return res.json({
       user: {
         id: user.id,
@@ -123,7 +137,6 @@ authRouter.post('/login', async (req, res, next) => {
         email: user.email,
         role: user.role,
       },
-      token,
     });
   } catch (err) {
     return next(err);
@@ -149,6 +162,11 @@ authRouter.get('/me', requireAuth, async (req, res, next) => {
   } catch (err) {
     return next(err);
   }
+});
+
+authRouter.post('/logout', (_req, res) => {
+  res.clearCookie(COOKIE_NAME, { path: '/' });
+  return res.json({ ok: true });
 });
 
 authRouter.patch('/me/wallet', requireAuth, async (req, res, next) => {

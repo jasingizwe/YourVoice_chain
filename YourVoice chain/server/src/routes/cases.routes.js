@@ -2,9 +2,11 @@ import { Router } from 'express';
 import { z } from 'zod';
 import multer from 'multer';
 import { pool } from '../db/pool.js';
+import fs from 'fs/promises';
+import path from 'path';
 import { requireAuth } from '../middleware/auth.js';
 import { logAudit } from '../services/audit.js';
-import { pinFileAndGetCid } from '../services/ipfs.js';
+import { makeLocalHash, pinFileAndGetCid } from '../services/ipfs.js';
 import { env } from '../config/env.js';
 
 const createCaseSchema = z.object({
@@ -109,6 +111,15 @@ const upload = multer({
 });
 
 casesRouter.use(requireAuth);
+const uploadsDir = path.resolve(process.cwd(), 'uploads');
+
+async function ensureUploadsDir() {
+  try {
+    await fs.mkdir(uploadsDir, { recursive: true });
+  } catch {
+    // best effort
+  }
+}
 
 async function getCaseRow(caseId) {
   const found = await pool.query('select * from cases where id = $1', [caseId]);
@@ -392,6 +403,11 @@ casesRouter.post('/:id/evidence', upload.single('file'), async (req, res, next) 
     let fileName = '';
     let evidenceType = 'document';
     let ipfsHash = '';
+    let ipfsStatus = 'pending';
+    let ipfsAttempts = 0;
+    let ipfsLastError = null;
+    let ipfsErrorForAudit = null;
+    let localPath = null;
 
     if (req.file) {
       const magicType = detectMagicType(req.file.buffer);
@@ -400,18 +416,37 @@ casesRouter.post('/:id/evidence', upload.single('file'), async (req, res, next) 
       }
       fileName = sanitizeFilename(req.file.originalname);
       evidenceType = req.file.mimetype?.startsWith('image/') ? 'image' : 'document';
-      const pin = await pinFileAndGetCid(req.file);
-      ipfsHash = pin.cid;
+      const localHash = makeLocalHash(req.file.buffer);
+      await ensureUploadsDir();
+      const safeName = `${caseId}-${Date.now()}-${fileName}`;
+      const filePath = path.join(uploadsDir, safeName);
+      await fs.writeFile(filePath, req.file.buffer);
+      localPath = filePath;
+      try {
+        const pin = await pinFileAndGetCid(req.file);
+        ipfsHash = pin.cid;
+        ipfsStatus = pin.source === 'pinata' ? 'pinned' : 'local';
+        ipfsAttempts = 1;
+        localPath = null;
+        await fs.unlink(filePath).catch(() => {});
+      } catch (err) {
+        ipfsHash = localHash;
+        ipfsStatus = 'failed';
+        ipfsAttempts = 1;
+        ipfsLastError = err?.message || 'IPFS upload failed';
+        ipfsErrorForAudit = ipfsLastError;
+      }
     } else {
       const input = createEvidenceSchema.parse(req.body);
       fileName = sanitizeFilename(input.fileName);
       evidenceType = input.evidenceType || 'document';
       ipfsHash = `local-${Date.now()}`;
+      ipfsStatus = 'local';
     }
 
     const inserted = await pool.query(
-      `insert into evidence (case_id, survivor_id, evidence_type, file_name, ipfs_hash, blockchain_tx)
-       values ($1, $2, $3, $4, $5, $6)
+      `insert into evidence (case_id, survivor_id, evidence_type, file_name, ipfs_hash, ipfs_status, ipfs_attempts, ipfs_last_error, local_path, blockchain_tx)
+       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        returning *`,
       [
         caseId,
@@ -419,6 +454,10 @@ casesRouter.post('/:id/evidence', upload.single('file'), async (req, res, next) 
         evidenceType,
         fileName,
         ipfsHash,
+        ipfsStatus,
+        ipfsAttempts,
+        ipfsLastError,
+        localPath,
         null,
       ],
     );
@@ -427,8 +466,17 @@ casesRouter.post('/:id/evidence', upload.single('file'), async (req, res, next) 
       userId,
       caseId,
       action: 'evidence_uploaded',
-      details: { fileName, evidenceType, ipfsHash },
+      details: { evidenceId: inserted.rows[0].id, fileName, evidenceType, ipfsHash, ipfsStatus },
     });
+
+    if (ipfsErrorForAudit) {
+      await logAudit({
+        userId,
+        caseId,
+        action: 'evidence_ipfs_failed',
+        details: { evidenceId: inserted.rows[0].id, fileName, error: ipfsErrorForAudit },
+      });
+    }
 
     return res.status(201).json({ item: inserted.rows[0] });
   } catch (err) {
@@ -573,6 +621,70 @@ casesRouter.patch('/:caseId/evidence/:evidenceId/restore', async (req, res, next
     });
 
     return res.json({ item: restored.rows[0] });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+casesRouter.get('/:caseId/evidence/:evidenceId/history', async (req, res, next) => {
+  try {
+    const { caseId, evidenceId } = req.params;
+    const userId = req.user.sub;
+    const role = req.user.role;
+
+    const access = await canAccessCase(caseId, userId, role);
+    if (!access) return res.status(403).json({ error: 'Not allowed' });
+
+    const history = await pool.query(
+      `select id, user_id, case_id, action, details, created_at
+       from audit_logs
+       where case_id = $1
+         and details->>'evidenceId' = $2
+       order by created_at desc`,
+      [caseId, evidenceId],
+    );
+
+    return res.json({ items: history.rows });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+casesRouter.get('/:caseId/evidence/:evidenceId/file', async (req, res, next) => {
+  try {
+    const { caseId, evidenceId } = req.params;
+    const userId = req.user.sub;
+    const role = req.user.role;
+
+    const access = await canAccessCase(caseId, userId, role);
+    if (!access) return res.status(403).json({ error: 'Not allowed' });
+
+    const result = await pool.query(
+      'select file_name, ipfs_hash, ipfs_status, local_path from evidence where id = $1 and case_id = $2 and deleted_at is null limit 1',
+      [evidenceId, caseId],
+    );
+    if (!result.rowCount) return res.status(404).json({ error: 'Evidence not found' });
+
+    const ev = result.rows[0];
+
+    // If file is on IPFS, redirect to the public gateway
+    if (ev.ipfs_hash && !ev.ipfs_hash.startsWith('local-') && ev.ipfs_status !== 'failed') {
+      const gateway = process.env.IPFS_GATEWAY_BASE || 'https://gateway.pinata.cloud/ipfs/';
+      return res.redirect(`${gateway}${ev.ipfs_hash}`);
+    }
+
+    // Serve from local disk
+    if (ev.local_path) {
+      const ext = path.extname(ev.file_name || '').toLowerCase();
+      const mimeMap = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.pdf': 'application/pdf' };
+      const contentType = mimeMap[ext] || 'application/octet-stream';
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Content-Disposition', `inline; filename="${ev.file_name || 'evidence'}"`);
+      const fileBuffer = await fs.readFile(ev.local_path);
+      return res.send(fileBuffer);
+    }
+
+    return res.status(404).json({ error: 'File not available' });
   } catch (err) {
     return next(err);
   }

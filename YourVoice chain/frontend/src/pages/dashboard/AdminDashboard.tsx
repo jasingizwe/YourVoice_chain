@@ -101,12 +101,12 @@ export default function AdminDashboard() {
           { icon: Activity, label: 'Authorities', value: users.filter(u => u.role === 'authority').length },
           { icon: FileText, label: 'Total Cases', value: caseCount },
         ].map(stat => (
-          <div key={stat.label} className="gradient-card rounded-xl border border-border p-4">
+          <div key={stat.label} className="rounded-xl border border-[#e8dde4] bg-white p-4">
             <div className="flex items-center gap-2 mb-2">
-              <stat.icon className="h-4 w-4 text-primary" />
-              <p className="text-sm text-muted-foreground">{stat.label}</p>
+              <stat.icon className="h-4 w-4 text-[#c0394b]" />
+              <p className="text-sm text-[#666]">{stat.label}</p>
             </div>
-            <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+            <p className="text-2xl font-bold text-[#1a1a1a]">{stat.value}</p>
           </div>
         ))}
       </div>
@@ -116,7 +116,7 @@ export default function AdminDashboard() {
         {loading ? (
           <div className="text-center py-12 text-muted-foreground">Loading...</div>
         ) : (
-          <div className="border border-border rounded-xl overflow-hidden">
+          <div className="border border-[#e8dde4] rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -132,15 +132,15 @@ export default function AdminDashboard() {
                 <tbody className="divide-y divide-border">
                   {users.map(u => (
                     <tr key={u.id} className="hover:bg-muted/30 transition-colors">
-                      <td className="px-4 py-3 text-foreground">{u.full_name || '—'}</td>
+                      <td className="px-4 py-3 text-foreground">{u.full_name || '-'}</td>
                       <td className="px-4 py-3 text-muted-foreground">{u.email}</td>
                       <td className="px-4 py-3">
-                        <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary capitalize">
+                        <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-[#fce8ec] text-[#c0394b] capitalize">
                           {u.role}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-muted-foreground text-xs">
-                        {u.wallet_address ? `${u.wallet_address.slice(0, 8)}...${u.wallet_address.slice(-6)}` : '—'}
+                        {u.wallet_address ? `${u.wallet_address.slice(0, 8)}...${u.wallet_address.slice(-6)}` : '-'}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground text-xs">
                         {new Date(u.created_at).toLocaleDateString()}
@@ -150,7 +150,7 @@ export default function AdminDashboard() {
                           <select
                             value={u.role}
                             onChange={e => updateRole(u.id, e.target.value)}
-                            className="text-xs border border-border rounded-md px-2 py-1 bg-background text-foreground"
+                            className="text-xs border border-[#e8dde4] rounded-md px-2 py-1 bg-white text-[#1a1a1a]"
                           >
                             <option value="survivor">Survivor</option>
                             <option value="authority">Authority</option>

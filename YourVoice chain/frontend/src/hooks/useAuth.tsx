@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import type { AppRole } from '@/lib/types';
-import { apiRequest, getApiToken, setApiToken } from '@/lib/api';
+import { apiRequest } from '@/lib/api';
 
 type AuthUser = {
   id: string;
@@ -21,7 +21,7 @@ type ApiUser = {
 
 interface AuthContextType {
   user: AuthUser | null;
-  session: { token: string } | null;
+  session: { active: true } | null;
   role: AppRole | null;
   loading: boolean;
   signUp: (email: string, password: string, fullName: string, role: AppRole) => Promise<void>;
@@ -45,28 +45,17 @@ function toAuthUser(user: ApiUser): AuthUser {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [session, setSession] = useState<{ token: string } | null>(null);
+  const [session, setSession] = useState<{ active: true } | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
   const [loading, setLoading] = useState(true);
 
   const hydrateUser = async () => {
-    const token = getApiToken();
-    if (!token) {
-      setUser(null);
-      setSession(null);
-      setRole(null);
-      setLoading(false);
-      return;
-    }
-
     try {
       const res = await apiRequest<{ user: ApiUser }>('/auth/me');
-      const authUser = toAuthUser(res.user);
-      setUser(authUser);
-      setSession({ token });
+      setUser(toAuthUser(res.user));
+      setSession({ active: true });
       setRole(res.user.role);
     } catch {
-      setApiToken(null);
       setUser(null);
       setSession(null);
       setRole(null);
@@ -80,34 +69,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string, roleToUse: AppRole) => {
-    const res = await apiRequest<{ user: ApiUser; token: string }>(
+    const res = await apiRequest<{ user: ApiUser }>(
       '/auth/register',
-      {
-        method: 'POST',
-        body: JSON.stringify({ fullName, email, password, role: roleToUse }),
-      },
+      { method: 'POST', body: JSON.stringify({ fullName, email, password, role: roleToUse }) },
       false,
     );
-    setApiToken(res.token);
-    setSession({ token: res.token });
-    const authUser = toAuthUser(res.user);
-    setUser(authUser);
+    setUser(toAuthUser(res.user));
+    setSession({ active: true });
     setRole(res.user.role);
   };
 
   const signIn = async (email: string, password: string) => {
-    const res = await apiRequest<{ user: ApiUser; token: string }>(
+    const res = await apiRequest<{ user: ApiUser }>(
       '/auth/login',
-      {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-      },
+      { method: 'POST', body: JSON.stringify({ email, password }) },
       false,
     );
-    setApiToken(res.token);
-    setSession({ token: res.token });
-    const authUser = toAuthUser(res.user);
-    setUser(authUser);
+    setUser(toAuthUser(res.user));
+    setSession({ active: true });
     setRole(res.user.role);
   };
 
@@ -116,7 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    setApiToken(null);
+    await apiRequest('/auth/logout', { method: 'POST' }).catch(() => {});
     setUser(null);
     setSession(null);
     setRole(null);

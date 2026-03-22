@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { apiRouter } from './routes/index.js';
@@ -26,8 +27,10 @@ export function createApp() {
         err.status = 403;
         return callback(err);
       },
+      credentials: true,
     }),
   );
+  app.use(cookieParser());
   app.use(express.json({ limit: env.API_JSON_LIMIT }));
   app.use(express.urlencoded({ extended: false, limit: env.API_FORM_LIMIT }));
   app.use(attachRequestContext);

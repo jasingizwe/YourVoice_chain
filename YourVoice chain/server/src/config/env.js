@@ -21,4 +21,13 @@ export const env = {
     .map(v => v.trim())
     .filter(Boolean),
   PASSWORD_MIN_LENGTH: Number(process.env.PASSWORD_MIN_LENGTH ?? 10),
+  SMTP_HOST: process.env.SMTP_HOST ?? '',
+  SMTP_PORT: Number(process.env.SMTP_PORT ?? 587),
+  SMTP_USER: process.env.SMTP_USER ?? '',
+  SMTP_PASS: process.env.SMTP_PASS ?? '',
+  SMTP_FROM: process.env.SMTP_FROM ?? '',
+  APP_URL: process.env.APP_URL ?? 'http://localhost:8080',
+  WALLET_PRIVATE_KEY: process.env.WALLET_PRIVATE_KEY ?? '',
+  RPC_URL: process.env.RPC_URL ?? 'https://rpc.sepolia.org',
+  EVIDENCE_CONTRACT_ADDRESS: process.env.EVIDENCE_CONTRACT_ADDRESS ?? '',
 };

@@ -37,9 +37,9 @@ export default function AuthorityDashboard() {
           { label: 'Active', value: cases.filter(c => c.status !== 'closed').length },
           { label: 'Closed', value: cases.filter(c => c.status === 'closed').length },
         ].map(stat => (
-          <div key={stat.label} className="gradient-card rounded-xl border border-border p-4">
-            <p className="text-sm text-muted-foreground">{stat.label}</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{stat.value}</p>
+          <div key={stat.label} className="rounded-xl border border-[#e8dde4] bg-white p-4">
+            <p className="text-sm text-[#666]">{stat.label}</p>
+            <p className="text-2xl font-bold text-[#1a1a1a] mt-1">{stat.value}</p>
           </div>
         ))}
       </div>
@@ -49,9 +49,9 @@ export default function AuthorityDashboard() {
         {loading ? (
           <div className="text-center py-12 text-muted-foreground">Loading...</div>
         ) : cases.length === 0 ? (
-          <div className="text-center py-12 border border-dashed border-border rounded-xl">
-            <FileText className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-            <p className="text-muted-foreground">No cases assigned to you yet.</p>
+          <div className="text-center py-12 border border-dashed border-[#e8dde4] rounded-xl">
+            <FileText className="h-10 w-10 text-[#aaa] mx-auto mb-3" />
+            <p className="text-[#666]">No cases assigned to you yet.</p>
           </div>
         ) : (
           cases.map(c => {
@@ -61,7 +61,7 @@ export default function AuthorityDashboard() {
               <Link
                 key={c.id}
                 to={`/dashboard/cases/${c.id}`}
-                className="block gradient-card rounded-xl border border-border p-4 hover:shadow-md transition-shadow"
+                className="block rounded-xl border border-[#e8dde4] bg-white p-4 hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start justify-between">
                   <div>

@@ -94,17 +94,14 @@ export default function NewCase() {
           const formData = new FormData();
           formData.append('file', file);
 
-          const token = localStorage.getItem('yourvoice_api_token');
           const uploadRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1'}/cases/${item.id}/evidence`, {
             method: 'POST',
-            headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+            credentials: 'include',
             body: formData,
           });
 
           const uploadPayload = await uploadRes.json().catch(() => ({}));
-          if (!uploadRes.ok) {
-            throw new Error(uploadPayload?.error || 'Evidence upload failed');
-          }
+          if (!uploadRes.ok) throw new Error(uploadPayload?.error || 'Evidence upload failed');
 
           const evidence = uploadPayload?.item;
           if (evidence?.id && evidence?.ipfs_hash && hasBlockchainConfig() && !chainCaseCreated) {
@@ -139,11 +136,11 @@ export default function NewCase() {
       } else if (failedChainWrites > 0) {
         toast({
           title: 'Case created',
-          description: `Evidence uploaded, but ${failedChainWrites} blockchain registration(s) failed.`,
+          description: 'Evidence uploaded. MetaMask was not available so blockchain anchoring was skipped.',
           variant: 'destructive',
         });
       } else {
-        toast({ title: 'Case created', description: 'Your case has been submitted successfully.' });
+        toast({ title: 'Case created', description: 'Your case has been submitted and anchored on the blockchain.' });
       }
 
       navigate(`/dashboard/cases/${item.id}`);
@@ -248,7 +245,7 @@ export default function NewCase() {
         </div>
 
         <div className="flex gap-3 pt-2">
-          <Button type="submit" disabled={submitting} className="rounded-full bg-[#efc37f] text-[#1f1e1a] hover:bg-[#e7b86e]">
+          <Button type="submit" disabled={submitting} className="rounded-full bg-[#c0394b] text-white hover:bg-[#a8303f]">
             {submitting ? 'Submitting...' : 'Submit Case'}
           </Button>
           <Link to="/dashboard/cases">

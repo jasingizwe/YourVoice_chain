@@ -8,6 +8,8 @@ import { useToast } from '@/hooks/use-toast';
 import {
   ArrowLeft,
   Clock,
+  Eye,
+  FileText,
   FileUp,
   MessageSquare,
   Pencil,
@@ -51,8 +53,17 @@ export default function CaseDetail() {
   const [updateTitle, setUpdateTitle] = useState('');
   const [updateMessage, setUpdateMessage] = useState('');
   const [busy, setBusy] = useState(false);
+  const [previewEvidence, setPreviewEvidence] = useState<Evidence | null>(null);
   const txExplorerBase = (import.meta.env.VITE_TX_EXPLORER_BASE as string | undefined) || 'https://sepolia.etherscan.io/tx/';
   const ipfsGatewayBase = (import.meta.env.VITE_IPFS_GATEWAY_BASE as string | undefined) || 'https://gateway.pinata.cloud/ipfs/';
+  const apiBase = (import.meta.env.VITE_API_URL as string | undefined) || 'http://localhost:4000/api/v1';
+
+  function getFileUrl(ev: Evidence): string {
+    if (ev.ipfs_hash && !ev.ipfs_hash.startsWith('local-') && ev.ipfs_status !== 'failed') {
+      return `${ipfsGatewayBase}${ev.ipfs_hash}`;
+    }
+    return `${apiBase}/cases/${ev.case_id}/evidence/${ev.id}/file`;
+  }
 
   const loadCase = async () => {
     if (!id) return;
@@ -171,31 +182,15 @@ export default function CaseDetail() {
       if (isSurvivorOwner && hasBlockchainConfig()) {
         const onchainCaseId = caseData?.onchain_case_id || null;
         const authorityWallet = res.item.authority_wallet_address;
-        if (!onchainCaseId) {
-          toast({
-            title: 'Access granted (off-chain only)',
-            description: 'This case has no on-chain ID yet. Upload evidence first to anchor it on-chain.',
-            variant: 'destructive',
-          });
-        } else if (!authorityWallet) {
-          toast({
-            title: 'Access granted (off-chain only)',
-            description: 'Authority has no wallet address saved, so on-chain grant was skipped.',
-            variant: 'destructive',
-          });
-        } else {
+        if (onchainCaseId && authorityWallet) {
           try {
             const txHash = await grantCaseAccessOnChain(onchainCaseId, authorityWallet);
             await apiRequest(`/cases/grants/${res.item.id}/tx`, {
               method: 'PATCH',
               body: JSON.stringify({ grantTx: txHash }),
             });
-          } catch (chainErr: any) {
-            toast({
-              title: 'Access granted (off-chain only)',
-              description: chainErr?.message || 'On-chain grant failed.',
-              variant: 'destructive',
-            });
+          } catch {
+            // grant still saved off-chain
           }
         }
       }
@@ -216,20 +211,15 @@ export default function CaseDetail() {
       await apiRequest(`/cases/grants/${grantId}/revoke`, { method: 'PATCH' });
 
       const grant = grants.find(g => g.id === grantId);
-      const onchainCaseId = caseData?.onchain_case_id || null;
-      if (isSurvivorOwner && onchainCaseId && grant?.authority_wallet_address && hasBlockchainConfig()) {
+      if (isSurvivorOwner && caseData?.onchain_case_id && grant?.authority_wallet_address && hasBlockchainConfig()) {
         try {
-          const txHash = await revokeCaseAccessOnChain(onchainCaseId, grant.authority_wallet_address);
+          const txHash = await revokeCaseAccessOnChain(caseData.onchain_case_id, grant.authority_wallet_address);
           await apiRequest(`/cases/grants/${grantId}/tx`, {
             method: 'PATCH',
             body: JSON.stringify({ revokeTx: txHash }),
           });
-        } catch (chainErr: any) {
-          toast({
-            title: 'Access revoked (off-chain only)',
-            description: chainErr?.message || 'On-chain revoke failed.',
-            variant: 'destructive',
-          });
+        } catch {
+          // revoke still saved off-chain
         }
       }
 
@@ -251,11 +241,10 @@ export default function CaseDetail() {
     try {
       const formData = new FormData();
       formData.append('file', evidenceFile);
-      const token = localStorage.getItem('yourvoice_api_token');
 
       const uploadRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1'}/cases/${id}/evidence`, {
         method: 'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        credentials: 'include',
         body: formData,
       });
 
@@ -267,27 +256,21 @@ export default function CaseDetail() {
       const evidenceRow = payload?.item as Evidence | undefined;
       if (evidenceRow?.id && evidenceRow.ipfs_hash && hasBlockchainConfig()) {
         try {
-          let chainTxHash: string | null = null;
           if (!caseData?.onchain_case_id) {
             const chain = await createCaseOnChain(evidenceRow.ipfs_hash);
-            chainTxHash = chain.txHash;
             await apiRequest(`/cases/${id}/onchain`, {
               method: 'PATCH',
               body: JSON.stringify({ onchainCaseId: chain.onchainCaseId, txHash: chain.txHash }),
             });
+            if (chain.txHash) {
+              await apiRequest(`/cases/${id}/evidence/${evidenceRow.id}/tx`, {
+                method: 'PATCH',
+                body: JSON.stringify({ txHash: chain.txHash }),
+              });
+            }
           }
-          if (chainTxHash) {
-            await apiRequest(`/cases/${id}/evidence/${evidenceRow.id}/tx`, {
-              method: 'PATCH',
-              body: JSON.stringify({ txHash: chainTxHash }),
-            });
-          }
-        } catch (chainErr: any) {
-          toast({
-            title: 'Evidence uploaded',
-            description: chainErr?.message || 'On-chain anchoring failed.',
-            variant: 'destructive',
-          });
+        } catch {
+          // evidence still saved
         }
       }
 
@@ -341,6 +324,82 @@ export default function CaseDetail() {
   if (loading) return <div className="py-12 text-center text-muted-foreground">Loading...</div>;
   if (!caseData) return <div className="py-12 text-center text-muted-foreground">Case not found.</div>;
 
+  // Evidence preview modal
+  const PreviewModal = () => {
+    if (!previewEvidence) return null;
+    const url = getFileUrl(previewEvidence);
+    const isImage = previewEvidence.evidence_type === 'image';
+    const isPdf = previewEvidence.file_name?.toLowerCase().endsWith('.pdf');
+
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+        onClick={() => setPreviewEvidence(null)}
+      >
+        <div
+          className="relative w-full max-w-3xl rounded-2xl bg-white shadow-2xl overflow-hidden"
+          onClick={e => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-[#f2ede8] px-5 py-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <FileText className="h-4 w-4 shrink-0 text-[#c0394b]" />
+              <span className="truncate text-sm font-medium text-[#1a1a1a]">
+                {previewEvidence.file_name || 'Evidence file'}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 shrink-0 ml-3">
+              <a
+                href={url}
+                target="_blank"
+                rel="noreferrer"
+                className="text-xs text-[#c0394b] hover:underline"
+              >
+                Open in new tab
+              </a>
+              <button
+                onClick={() => setPreviewEvidence(null)}
+                className="rounded-full p-1 hover:bg-[#fce8ec] transition-colors"
+              >
+                <X className="h-4 w-4 text-[#1a1a1a]" />
+              </button>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="flex items-center justify-center bg-[#faf8f3] p-4" style={{ minHeight: 400, maxHeight: '75vh' }}>
+            {isImage ? (
+              <img
+                src={url}
+                alt={previewEvidence.file_name || 'Evidence'}
+                className="max-h-[65vh] max-w-full rounded-lg object-contain shadow"
+              />
+            ) : isPdf ? (
+              <iframe
+                src={url}
+                title={previewEvidence.file_name || 'Evidence'}
+                className="h-[65vh] w-full rounded-lg border-0"
+              />
+            ) : (
+              <div className="text-center">
+                <FileText className="mx-auto mb-3 h-12 w-12 text-[#c0394b]" />
+                <p className="text-sm text-[#666]">Preview not available for this file type.</p>
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-3 inline-block text-sm font-semibold text-[#c0394b] hover:underline"
+                >
+                  Download file
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const isSurvivorOwner = role === 'survivor' && caseData.survivor_id === user?.id;
   const canUpdateStatus = role === 'authority' || role === 'admin';
   const canManageAccess = isSurvivorOwner || role === 'admin';
@@ -349,6 +408,7 @@ export default function CaseDetail() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 animate-fade-in">
+      <PreviewModal />
       <Link to="/dashboard/cases" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="h-4 w-4" /> Back to cases
       </Link>
@@ -393,7 +453,7 @@ export default function CaseDetail() {
                 </Button>
               </>
             )}
-            <span className="inline-flex items-center gap-1 rounded-full bg-[#efe8d8] px-3 py-1 text-xs font-medium text-[#7a6651]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-[#fce8ec] px-3 py-1 text-xs font-medium text-[#c0394b]">
               <Clock className="h-3 w-3" />
               {caseData.status.replace('_', ' ')}
             </span>
@@ -471,18 +531,29 @@ export default function CaseDetail() {
                     )}
                   </div>
                 </div>
-                {(isSurvivorOwner || role === 'admin') && (
+                <div className="flex flex-col gap-1">
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    onClick={() => deleteEvidence(ev.id)}
-                    className="gap-1 text-destructive"
-                    disabled={busy}
+                    onClick={() => setPreviewEvidence(ev)}
+                    className="gap-1 text-[#c0394b]"
                   >
-                    <Trash2 className="h-3.5 w-3.5" /> Delete
+                    <Eye className="h-3.5 w-3.5" /> Preview
                   </Button>
-                )}
+                  {(isSurvivorOwner || role === 'admin') && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteEvidence(ev.id)}
+                      className="gap-1 text-destructive"
+                      disabled={busy}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" /> Delete
+                    </Button>
+                  )}
+                </div>
               </div>
             ))}
           </div>

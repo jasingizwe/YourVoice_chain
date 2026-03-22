@@ -51,24 +51,24 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen bg-[#ece9e1] flex items-center justify-center p-4">
-      <div className="w-full max-w-md rounded-[24px] border border-[#e8e4dc] bg-white p-7 shadow-[0_22px_40px_-30px_rgba(0,0,0,0.45)]">
+    <div className="min-h-screen bg-[#fdf2f8] flex items-center justify-center p-4">
+      <div className="w-full max-w-md rounded-[24px] border border-[#fbcfe8] bg-white p-7 shadow-[0_22px_40px_-30px_rgba(192,57,75,0.15)]">
         <div className="mb-6 text-center">
           <div className="mb-3 flex justify-center">
-            <Brand size="lg" />
+            <Brand size="lg" showText={false} />
           </div>
-          <h1 className="text-2xl font-heading font-semibold text-[#1f1e1a]">Reset your password</h1>
-          <p className="mt-1 text-sm text-[#6f6a62]">Enter your email and we&apos;ll send you reset instructions.</p>
+          <h1 className="text-2xl font-semibold text-[#1a1a1a]">Reset your password</h1>
+          <p className="mt-1 text-sm text-[#888]">Enter your email and we&apos;ll send you reset instructions.</p>
         </div>
 
         {sent ? (
           <div className="text-center">
-            <p className="mb-2 font-medium text-[#1f1e1a]">Check your email</p>
-            <p className="mb-4 text-sm text-[#6f6a62]">
-              If your account exists, reset instructions were generated for <span className="font-medium text-[#1f1e1a]">{email}</span>.
+            <p className="mb-2 font-medium text-[#1a1a1a]">Check your email</p>
+            <p className="mb-4 text-sm text-[#888]">
+              If your account exists, reset instructions were generated for <span className="font-medium text-[#1a1a1a]">{email}</span>.
             </p>
             <Link to="/auth?mode=login">
-              <Button variant="outline" size="sm" className="gap-2 rounded-lg border-[#dad4ca]">
+              <Button variant="outline" size="sm" className="gap-2 rounded-lg border-[#fbcfe8] text-[#c0394b] hover:bg-[#fce8ec]">
                 <ArrowLeft className="h-4 w-4" /> Back to Log In
               </Button>
             </Link>
@@ -76,7 +76,7 @@ export default function ForgotPassword() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="email" className="text-[#2b2924]">Email</Label>
+              <Label htmlFor="email" className="text-[#1a1a1a]">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -84,18 +84,18 @@ export default function ForgotPassword() {
                 onChange={e => setEmail(e.target.value)}
                 placeholder="your@email.com"
                 required
-                className="mt-1 border-[#ddd8cf]"
+                className="mt-1 border-[#fbcfe8] focus-visible:ring-[#c0394b]"
               />
             </div>
             <Button
               type="submit"
-              className="w-full rounded-lg bg-[#efc37f] text-[#1f1e1a] hover:bg-[#e8b868]"
+              className="w-full rounded-lg bg-[#c0394b] text-white hover:bg-[#a8303f]"
               disabled={submitting}
             >
               {submitting ? 'Sending...' : 'Send Reset Link'}
             </Button>
-            <p className="text-center text-sm text-[#6f6a62]">
-              <Link to="/auth?mode=login" className="font-medium text-[#1f1e1a] hover:underline">
+            <p className="text-center text-sm text-[#888]">
+              <Link to="/auth?mode=login" className="font-medium text-[#c0394b] hover:underline">
                 Back to Log In
               </Link>
             </p>

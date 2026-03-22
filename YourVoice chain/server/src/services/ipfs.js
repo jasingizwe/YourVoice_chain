@@ -1,25 +1,26 @@
 import crypto from 'crypto';
+import fs from 'fs/promises';
 import { env } from '../config/env.js';
 
-function makeLocalHash(buffer) {
+export function makeLocalHash(buffer) {
   const digest = crypto.createHash('sha256').update(buffer).digest('hex');
   return `local-sha256-${digest}`;
 }
 
-export async function pinFileAndGetCid(file) {
-  if (!file?.buffer) {
-    throw new Error('No file buffer received');
-  }
-
+async function pinBufferAndGetCid(buffer, { mimetype, originalname }) {
   if (!env.PINATA_JWT) {
-    return { cid: makeLocalHash(file.buffer), source: 'local' };
+    return { cid: makeLocalHash(buffer), source: 'local' };
   }
 
   const form = new FormData();
-  form.append('file', new Blob([file.buffer], { type: file.mimetype || 'application/octet-stream' }), file.originalname || 'evidence');
+  form.append(
+    'file',
+    new Blob([buffer], { type: mimetype || 'application/octet-stream' }),
+    originalname || 'evidence',
+  );
 
   const metadata = JSON.stringify({
-    name: file.originalname || 'evidence',
+    name: originalname || 'evidence',
   });
   form.append('pinataMetadata', metadata);
 
@@ -42,4 +43,20 @@ export async function pinFileAndGetCid(file) {
   }
 
   return { cid: payload.IpfsHash, source: 'pinata' };
+}
+
+export async function pinFileAndGetCid(file) {
+  if (!file?.buffer) {
+    throw new Error('No file buffer received');
+  }
+
+  return pinBufferAndGetCid(file.buffer, {
+    mimetype: file.mimetype,
+    originalname: file.originalname,
+  });
+}
+
+export async function pinFileFromPath(filePath, meta = {}) {
+  const buffer = await fs.readFile(filePath);
+  return pinBufferAndGetCid(buffer, meta);
 }

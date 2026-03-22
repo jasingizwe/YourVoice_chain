@@ -28,6 +28,7 @@ export interface Evidence {
   survivor_id: string;
   evidence_type: string;
   ipfs_hash: string | null;
+  ipfs_status: 'pinned' | 'local' | 'failed' | 'pending' | null;
   blockchain_tx: string | null;
   file_name: string | null;
   uploaded_at: string;

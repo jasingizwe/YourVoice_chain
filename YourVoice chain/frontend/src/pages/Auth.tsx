@@ -105,8 +105,8 @@ export default function Auth() {
     { value: 'authority', label: 'Authority' },
   ];
 
-  const pageWrap = 'min-h-screen bg-[#ece9e1] flex items-center justify-center p-4';
-  const cardWrap = 'w-full max-w-md rounded-[24px] border border-[#e8e4dc] bg-white p-7 shadow-[0_22px_40px_-30px_rgba(0,0,0,0.45)]';
+  const pageWrap = 'min-h-screen bg-[#fdf2f8] flex items-center justify-center p-4';
+  const cardWrap = 'w-full max-w-md rounded-[24px] border border-[#fbcfe8] bg-white p-7 shadow-[0_22px_40px_-30px_rgba(192,57,75,0.15)]';
   const subtleText = 'text-sm text-[#6f6a62]';
 
   if (view === 'chooser') {
@@ -115,17 +115,17 @@ export default function Auth() {
         <div className={cardWrap}>
           <div className="mb-6 text-center">
             <div className="mb-3 flex justify-center">
-              <Brand size="lg" />
+              <Brand size="lg" showText={false} />
             </div>
             <h1 className="text-2xl font-heading font-semibold text-[#1f1e1a]">Get Started</h1>
             <p className={`${subtleText} mt-1`}>Choose how you want to continue</p>
           </div>
 
           <div className="space-y-3">
-            <Button className="w-full rounded-lg bg-[#efc37f] text-[#1f1e1a] hover:bg-[#e8b868]" onClick={() => setView('register')}>
+            <Button className="w-full rounded-lg bg-[#c0394b] text-white hover:bg-[#a8303f]" onClick={() => setView('register')}>
               Create Account
             </Button>
-            <Button variant="outline" className="w-full rounded-lg border-[#dad4ca] bg-white text-[#1f1e1a]" onClick={() => setView('login')}>
+            <Button variant="outline" className="w-full rounded-lg border-[#fbcfe8] bg-white text-[#c0394b] hover:bg-[#fce8ec]" onClick={() => setView('login')}>
               Log In
             </Button>
           </div>
@@ -139,7 +139,7 @@ export default function Auth() {
       <div className={cardWrap}>
         <div className="mb-6 text-center">
           <div className="mb-3 flex justify-center">
-            <Brand size="lg" />
+            <Brand size="lg" showText={false} />
           </div>
           <h1 className="text-2xl font-heading font-semibold text-[#1f1e1a]">
             {isRegister ? 'Create your account' : 'Welcome back'}
@@ -159,7 +159,7 @@ export default function Auth() {
                 onChange={e => setFullName(e.target.value)}
                 placeholder="Your full name"
                 required
-                className="mt-1 border-[#ddd8cf]"
+                className="mt-1 border-[#fbcfe8] focus:border-[#c0394b]"
               />
             </div>
           )}
@@ -173,7 +173,7 @@ export default function Auth() {
               onChange={e => setEmail(e.target.value)}
               placeholder="your@email.com"
               required
-              className="mt-1 border-[#ddd8cf]"
+              className="mt-1 border-[#fbcfe8] focus:border-[#c0394b]"
             />
           </div>
 
@@ -188,7 +188,7 @@ export default function Auth() {
                 placeholder="********"
                 required
                 minLength={6}
-                className="border-[#ddd8cf] pr-10"
+                className="border-[#fbcfe8] pr-10 focus:border-[#c0394b]"
               />
               <button
                 type="button"
@@ -209,10 +209,10 @@ export default function Auth() {
                     key={r.value}
                     type="button"
                     onClick={() => setRole(r.value)}
-                    className={`rounded-lg border px-3 py-2 text-sm ${
+                    className={`rounded-lg border px-3 py-2 text-sm transition-colors ${
                       role === r.value
-                        ? 'border-[#efc37f] bg-[#f7eddc] text-[#2b2924]'
-                        : 'border-[#ddd8cf] bg-white text-[#5a554d]'
+                        ? 'border-[#c0394b] bg-[#fce8ec] text-[#c0394b]'
+                        : 'border-[#fbcfe8] bg-white text-[#5a554d] hover:border-[#c0394b]'
                     }`}
                   >
                     {r.label}
@@ -224,7 +224,7 @@ export default function Auth() {
 
           {!isRegister && (
             <div className="text-right">
-              <Link to="/forgot-password" className="text-xs text-[#5f7d88] hover:underline">
+              <Link to="/forgot-password" className="text-xs text-[#c0394b] hover:underline">
                 Forgot password?
               </Link>
             </div>
@@ -232,7 +232,7 @@ export default function Auth() {
 
           <Button
             type="submit"
-            className="w-full rounded-lg bg-[#efc37f] text-[#1f1e1a] hover:bg-[#e8b868]"
+            className="w-full rounded-lg bg-[#c0394b] text-white hover:bg-[#a8303f]"
             disabled={submitting}
           >
             {submitting ? 'Please wait...' : isRegister ? 'Create Account' : 'Log In'}
@@ -242,7 +242,7 @@ export default function Auth() {
             <Button
               type="button"
               variant="outline"
-              className="w-full rounded-lg border-[#ddd8cf]"
+              className="w-full rounded-lg border-[#fbcfe8] text-[#c0394b]"
               disabled={resending}
               onClick={handleResendConfirmation}
             >
