@@ -8,10 +8,10 @@ YourVoice is a survivor-centered platform for secure GBV case documentation, evi
 - Backend API: `https://yourvoice-api.onrender.com`
 - Health Check: `https://yourvoice-api.onrender.com/health`
 
-## Demo Video (5 Minutes)
+## Demo Video 
 
 - Video Link: `https://drive.google.com/file/d/1lsprJPgAGqrHK9rOAllJOb6lIBu0gfUM/view?usp=sharing`
-- The demo focuses on core functionalities (case submission, evidence, access grants, authority updates, notifications) and avoids spending time on sign-up/sign-in flows.
+- The demo focuses on core functionalities (case submission, evidence, access grants, authority updates, notifications).
 
 ## Project Structure
 
