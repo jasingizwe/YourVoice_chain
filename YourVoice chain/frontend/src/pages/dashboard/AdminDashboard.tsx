@@ -116,6 +116,7 @@ export default function AdminDashboard() {
         {loading ? (
           <div className="text-center py-12 text-muted-foreground">Loading...</div>
         ) : (
+          <>
           {/* Mobile card layout */}
           <div className="flex flex-col gap-3 md:hidden">
             {users.map(u => (
@@ -217,6 +218,7 @@ export default function AdminDashboard() {
               </table>
             </div>
           </div>
+          </>
         )}
       </div>
     </div>
