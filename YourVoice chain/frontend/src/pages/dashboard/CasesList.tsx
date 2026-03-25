@@ -84,7 +84,7 @@ export default function CasesList() {
         </div>
         {role === 'survivor' && (
           <Link to="/dashboard/cases/new">
-            <Button className="rounded-full bg-[#c0394b] px-5 text-white hover:bg-[#a8303f]">
+            <Button className="rounded-full bg-[#1a6fbb] px-5 text-white hover:bg-[#155fa0]">
               <Plus className="mr-2 h-4 w-4" />
               New Case
             </Button>
@@ -101,7 +101,7 @@ export default function CasesList() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search cases…"
-            className="w-full rounded-full border border-[#e2ddd2] bg-white py-2 pl-9 pr-4 text-sm text-[#1f2328] outline-none focus:border-[#c0394b] transition-colors"
+            className="w-full rounded-full border border-[#e2ddd2] bg-white py-2 pl-9 pr-4 text-sm text-[#1f2328] outline-none focus:border-[#1a6fbb] transition-colors"
           />
         </div>
         <div className="flex flex-wrap gap-2">
@@ -112,8 +112,8 @@ export default function CasesList() {
               onClick={() => setFilter(f.key)}
               className={`rounded-full px-4 py-2 text-xs font-medium transition-colors ${
                 filter === f.key
-                  ? 'bg-[#c0394b] text-white'
-                  : 'border border-[#e2ddd2] bg-white text-[#5e5f5a] hover:border-[#c0394b] hover:text-[#c0394b]'
+                  ? 'bg-[#1a6fbb] text-white'
+                  : 'border border-[#e2ddd2] bg-white text-[#5e5f5a] hover:border-[#1a6fbb] hover:text-[#1a6fbb]'
               }`}
             >
               {f.label}
@@ -143,7 +143,7 @@ export default function CasesList() {
                 <Link
                   key={item.id}
                   to={`/dashboard/cases/${item.id}`}
-                  className={`flex items-center justify-between gap-4 px-5 py-4 transition hover:bg-[#fdf8f9] ${idx === 0 ? 'rounded-t-2xl' : ''} ${idx === filteredCases.length - 1 ? 'rounded-b-2xl' : ''}`}
+                  className={`flex items-center justify-between gap-4 px-5 py-4 transition hover:bg-[#f0f7ff] ${idx === 0 ? 'rounded-t-2xl' : ''} ${idx === filteredCases.length - 1 ? 'rounded-b-2xl' : ''}`}
                 >
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate font-medium text-[#1f2328]">{item.title}</h3>
@@ -155,7 +155,7 @@ export default function CasesList() {
                       <StatusIcon className="h-3.5 w-3.5" />
                       {status.label}
                     </span>
-                    <ArrowUpRight className="h-4 w-4 text-[#c0394b]" />
+                    <ArrowUpRight className="h-4 w-4 text-[#1a6fbb]" />
                   </div>
                 </Link>
               );

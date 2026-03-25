@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Phone, Mail, Globe, AlertCircle, Scale, Building2 } from 'lucide-react';
 import Brand from '@/components/Brand';
+import Footer from '@/components/Footer';
+import PublicNavbar from '@/components/PublicNavbar';
 
 const immediateOrgs = [
   {
@@ -114,34 +116,34 @@ function OrgCard({
       <div className="flex flex-col gap-1.5 mt-1">
         {phone && (
           <span className="flex items-center gap-2 text-sm text-[#1a1a1a]">
-            <Phone className="h-3.5 w-3.5 text-[#c0394b] shrink-0" />
+            <Phone className="h-3.5 w-3.5 text-[#1a6fbb] shrink-0" />
             <span className="text-[#888] mr-1">{phoneLabel}:</span>
             <strong>{phone}</strong>
           </span>
         )}
         {tollFree && (
           <span className="flex items-center gap-2 text-sm text-[#1a1a1a]">
-            <Phone className="h-3.5 w-3.5 text-[#c0394b] shrink-0" />
+            <Phone className="h-3.5 w-3.5 text-[#1a6fbb] shrink-0" />
             <span className="text-[#888] mr-1">Toll-Free:</span>
             <strong>{tollFree}</strong>
           </span>
         )}
         {email && (
           <span className="flex items-center gap-2 text-sm text-[#1a1a1a]">
-            <Mail className="h-3.5 w-3.5 text-[#c0394b] shrink-0" />
-            <a href={`mailto:${email}`} className="hover:text-[#c0394b] transition-colors break-all">
+            <Mail className="h-3.5 w-3.5 text-[#1a6fbb] shrink-0" />
+            <a href={`mailto:${email}`} className="hover:text-[#1a6fbb] transition-colors break-all">
               {email}
             </a>
           </span>
         )}
         {website && (
           <span className="flex items-center gap-2 text-sm text-[#1a1a1a]">
-            <Globe className="h-3.5 w-3.5 text-[#c0394b] shrink-0" />
+            <Globe className="h-3.5 w-3.5 text-[#1a6fbb] shrink-0" />
             <a
               href={website}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#c0394b] transition-colors break-all"
+              className="hover:text-[#1a6fbb] transition-colors break-all"
             >
               {website}
             </a>
@@ -163,11 +165,11 @@ function SectionHeader({
 }) {
   return (
     <div className="mb-6 flex items-center gap-4">
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#f9c8d4]">
-        <Icon className="h-5 w-5 text-[#c0394b]" />
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#bee3f8]">
+        <Icon className="h-5 w-5 text-[#1a6fbb]" />
       </div>
       <div>
-        <p className="text-xs font-bold uppercase tracking-widest text-[#c0394b]">{label}</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-[#1a6fbb]">{label}</p>
         <h2 className="text-xl font-bold text-[#1a1a1a]">{title}</h2>
       </div>
     </div>
@@ -176,26 +178,14 @@ function SectionHeader({
 
 export default function Resources() {
   return (
-    <div className="min-h-screen bg-[#faf8f3] font-sans">
+    <div className="min-h-screen bg-[#f0f7ff] font-sans">
 
-      {/* NAVBAR */}
-      <header className="bg-[#f9c8d4] px-6 py-4 md:px-16">
-        <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <Brand size="md" showText={false} />
-          <nav className="flex items-center gap-8 text-sm font-medium text-[#1a1a1a]">
-            <Link to="/" className="hover:text-[#c0394b] transition-colors">Home</Link>
-            <Link to="/guide/features" className="hover:text-[#c0394b] transition-colors">Features</Link>
-            <Link to="/guide/how-it-works" className="hover:text-[#c0394b] transition-colors">How it works</Link>
-            <Link to="/resources" className="font-semibold text-[#c0394b]">Resources</Link>
-            <Link to="/dashboard/cases" className="hover:text-[#c0394b] transition-colors">Cases</Link>
-          </nav>
-        </div>
-      </header>
+      <PublicNavbar activePath="/resources" />
 
       {/* HERO */}
-      <section className="bg-[#faf8f3] px-6 py-16 md:px-16">
+      <section className="bg-[#f0f7ff] px-6 py-16 md:px-16">
         <div className="mx-auto max-w-6xl">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#c0394b]">Support Directory</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#1a6fbb]">Support Directory</p>
           <h1 className="text-4xl font-bold text-[#1a1a1a] md:text-5xl">Support & Resources</h1>
           <p className="mt-3 max-w-xl text-[#555]">
             You are not alone. These organisations are here to help, whether you need immediate care,
@@ -205,7 +195,7 @@ export default function Resources() {
       </section>
 
       {/* EMERGENCY BANNER */}
-      <div className="bg-[#c0394b] px-6 py-4 md:px-16">
+      <div className="bg-[#1a6fbb] px-6 py-4 md:px-16">
         <div className="mx-auto flex max-w-6xl items-center gap-3">
           <AlertCircle className="h-5 w-5 text-white shrink-0" />
           <p className="text-sm font-semibold text-white">
@@ -232,7 +222,7 @@ export default function Resources() {
       </section>
 
       {/* SECTION 2 — NGOs */}
-      <section className="bg-[#faf8f3] px-6 py-14 md:px-16">
+      <section className="bg-[#f0f7ff] px-6 py-14 md:px-16">
         <div className="mx-auto max-w-6xl">
           <SectionHeader
             icon={Scale}
@@ -263,26 +253,7 @@ export default function Resources() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="bg-[#111] px-6 py-12 md:px-16">
-        <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-[2fr_1fr]">
-          <div>
-            <Brand linkTo="/" className="opacity-90" />
-            <p className="mt-2 text-sm text-[#aaa] leading-relaxed">
-              A survivor-centred platform for secure GBV case documentation and management.
-            </p>
-          </div>
-          <div>
-            <p className="mb-3 text-sm font-semibold text-white">Quick Links</p>
-            <ul className="space-y-2 text-sm text-[#aaa]">
-              <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
-              <li><Link to="/guide/features" className="hover:text-white transition-colors">Features</Link></li>
-              <li><Link to="/guide/how-it-works" className="hover:text-white transition-colors">How it works</Link></li>
-              <li><Link to="/resources" className="hover:text-white transition-colors">Resources</Link></li>
-            </ul>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
     </div>
   );

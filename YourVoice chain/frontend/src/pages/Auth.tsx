@@ -24,6 +24,7 @@ export default function Auth() {
   const [fullName, setFullName] = useState('');
   const [role, setRole] = useState<AppRole>('survivor');
   const [showPassword, setShowPassword] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [unconfirmedEmail, setUnconfirmedEmail] = useState('');
   const [resending, setResending] = useState(false);
@@ -51,6 +52,7 @@ export default function Auth() {
         const passwordError = getPasswordValidationError(password);
         if (passwordError) throw new Error(passwordError);
         if (!fullName.trim()) throw new Error('Full name is required.');
+        if (!agreedToTerms) throw new Error('You must agree to the Terms and Privacy Policy to create an account.');
       }
 
       if (isRegister) {
@@ -105,8 +107,8 @@ export default function Auth() {
     { value: 'authority', label: 'Authority' },
   ];
 
-  const pageWrap = 'min-h-screen bg-[#fdf2f8] flex items-center justify-center p-4';
-  const cardWrap = 'w-full max-w-md rounded-[24px] border border-[#fbcfe8] bg-white p-7 shadow-[0_22px_40px_-30px_rgba(192,57,75,0.15)]';
+  const pageWrap = 'min-h-screen bg-[#f0f7ff] flex items-center justify-center p-4';
+  const cardWrap = 'w-full max-w-md rounded-[24px] border border-[#bfdbfe] bg-white p-7 shadow-[0_22px_40px_-30px_rgba(26,111,187,0.15)]';
   const subtleText = 'text-sm text-[#6f6a62]';
 
   if (view === 'chooser') {
@@ -122,10 +124,10 @@ export default function Auth() {
           </div>
 
           <div className="space-y-3">
-            <Button className="w-full rounded-lg bg-[#c0394b] text-white hover:bg-[#a8303f]" onClick={() => setView('register')}>
+            <Button className="w-full rounded-lg bg-[#1a6fbb] text-white hover:bg-[#155fa0]" onClick={() => setView('register')}>
               Create Account
             </Button>
-            <Button variant="outline" className="w-full rounded-lg border-[#fbcfe8] bg-white text-[#c0394b] hover:bg-[#fce8ec]" onClick={() => setView('login')}>
+            <Button variant="outline" className="w-full rounded-lg border-[#bfdbfe] bg-white text-[#1a6fbb] hover:bg-[#dbeafe]" onClick={() => setView('login')}>
               Log In
             </Button>
           </div>
@@ -159,7 +161,7 @@ export default function Auth() {
                 onChange={e => setFullName(e.target.value)}
                 placeholder="Your full name"
                 required
-                className="mt-1 border-[#fbcfe8] focus:border-[#c0394b]"
+                className="mt-1 border-[#bfdbfe] focus:border-[#1a6fbb]"
               />
             </div>
           )}
@@ -173,7 +175,7 @@ export default function Auth() {
               onChange={e => setEmail(e.target.value)}
               placeholder="your@email.com"
               required
-              className="mt-1 border-[#fbcfe8] focus:border-[#c0394b]"
+              className="mt-1 border-[#bfdbfe] focus:border-[#1a6fbb]"
             />
           </div>
 
@@ -188,7 +190,7 @@ export default function Auth() {
                 placeholder="********"
                 required
                 minLength={6}
-                className="border-[#fbcfe8] pr-10 focus:border-[#c0394b]"
+                className="border-[#bfdbfe] pr-10 focus:border-[#1a6fbb]"
               />
               <button
                 type="button"
@@ -211,8 +213,8 @@ export default function Auth() {
                     onClick={() => setRole(r.value)}
                     className={`rounded-lg border px-3 py-2 text-sm transition-colors ${
                       role === r.value
-                        ? 'border-[#c0394b] bg-[#fce8ec] text-[#c0394b]'
-                        : 'border-[#fbcfe8] bg-white text-[#5a554d] hover:border-[#c0394b]'
+                        ? 'border-[#1a6fbb] bg-[#dbeafe] text-[#1a6fbb]'
+                        : 'border-[#bfdbfe] bg-white text-[#5a554d] hover:border-[#1a6fbb]'
                     }`}
                   >
                     {r.label}
@@ -222,9 +224,41 @@ export default function Auth() {
             </div>
           )}
 
+          {isRegister && (
+            <div className="flex items-start gap-2.5">
+              <input
+                id="agreeTerms"
+                type="checkbox"
+                checked={agreedToTerms}
+                onChange={e => setAgreedToTerms(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-[#bfdbfe] accent-[#1a6fbb]"
+              />
+              <label htmlFor="agreeTerms" className="text-xs text-[#6f6a62] leading-relaxed cursor-pointer">
+                I have read and agree to the{' '}
+                <Link
+                  to="/terms"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#1a6fbb] hover:underline font-medium"
+                >
+                  End User License Agreement
+                </Link>{' '}
+                and{' '}
+                <Link
+                  to="/terms"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#1a6fbb] hover:underline font-medium"
+                >
+                  Privacy Policy
+                </Link>
+              </label>
+            </div>
+          )}
+
           {!isRegister && (
             <div className="text-right">
-              <Link to="/forgot-password" className="text-xs text-[#c0394b] hover:underline">
+              <Link to="/forgot-password" className="text-xs text-[#1a6fbb] hover:underline">
                 Forgot password?
               </Link>
             </div>
@@ -232,7 +266,7 @@ export default function Auth() {
 
           <Button
             type="submit"
-            className="w-full rounded-lg bg-[#c0394b] text-white hover:bg-[#a8303f]"
+            className="w-full rounded-lg bg-[#1a6fbb] text-white hover:bg-[#155fa0]"
             disabled={submitting}
           >
             {submitting ? 'Please wait...' : isRegister ? 'Create Account' : 'Log In'}
@@ -242,7 +276,7 @@ export default function Auth() {
             <Button
               type="button"
               variant="outline"
-              className="w-full rounded-lg border-[#fbcfe8] text-[#c0394b]"
+              className="w-full rounded-lg border-[#bfdbfe] text-[#1a6fbb]"
               disabled={resending}
               onClick={handleResendConfirmation}
             >
@@ -254,7 +288,7 @@ export default function Auth() {
             {isRegister ? 'Already have an account?' : "Don't have an account?"}{' '}
             <button
               type="button"
-              onClick={() => setView(isRegister ? 'login' : 'register')}
+              onClick={() => { setView(isRegister ? 'login' : 'register'); setAgreedToTerms(false); }}
               className="font-medium text-[#1f1e1a] hover:underline"
             >
               {isRegister ? 'Log In' : 'Create Account'}

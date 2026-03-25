@@ -103,7 +103,7 @@ export default function AdminDashboard() {
         ].map(stat => (
           <div key={stat.label} className="rounded-xl border border-[#e8dde4] bg-white p-4">
             <div className="flex items-center gap-2 mb-2">
-              <stat.icon className="h-4 w-4 text-[#c0394b]" />
+              <stat.icon className="h-4 w-4 text-[#1a6fbb]" />
               <p className="text-sm text-[#666]">{stat.label}</p>
             </div>
             <p className="text-2xl font-bold text-[#1a1a1a]">{stat.value}</p>
@@ -116,7 +116,50 @@ export default function AdminDashboard() {
         {loading ? (
           <div className="text-center py-12 text-muted-foreground">Loading...</div>
         ) : (
-          <div className="border border-[#e8dde4] rounded-xl overflow-hidden">
+          {/* Mobile card layout */}
+          <div className="flex flex-col gap-3 md:hidden">
+            {users.map(u => (
+              <div key={u.id} className="rounded-xl border border-[#e8dde4] bg-card p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="font-medium text-foreground truncate">{u.full_name || '-'}</p>
+                    <p className="text-xs text-muted-foreground truncate">{u.email}</p>
+                  </div>
+                  <span className="shrink-0 inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-[#dbeafe] text-[#1a6fbb] capitalize">
+                    {u.role}
+                  </span>
+                </div>
+                <div className="text-xs text-muted-foreground space-y-0.5">
+                  <p>Wallet: {u.wallet_address ? `${u.wallet_address.slice(0, 8)}...${u.wallet_address.slice(-6)}` : '—'}</p>
+                  <p>Joined: {new Date(u.created_at).toLocaleDateString()}</p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-border">
+                  <select
+                    value={u.role}
+                    onChange={e => updateRole(u.id, e.target.value)}
+                    className="text-xs border border-[#e8dde4] rounded-md px-2 py-1.5 bg-white text-[#1a1a1a]"
+                  >
+                    <option value="survivor">Survivor</option>
+                    <option value="authority">Authority</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                  {u.role === 'authority' && (
+                    <>
+                      <Button type="button" variant="outline" size="sm" onClick={() => checkChainApproval(u)} className="h-8 px-3 text-xs">
+                        Check Chain
+                      </Button>
+                      <Button type="button" size="sm" onClick={() => approveOnChain(u)} disabled={!u.wallet_address} className="h-8 px-3 text-xs">
+                        {chainApprovals[u.id] ? 'Approved' : 'Approve Chain'}
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop table layout */}
+          <div className="hidden md:block border border-[#e8dde4] rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -135,7 +178,7 @@ export default function AdminDashboard() {
                       <td className="px-4 py-3 text-foreground">{u.full_name || '-'}</td>
                       <td className="px-4 py-3 text-muted-foreground">{u.email}</td>
                       <td className="px-4 py-3">
-                        <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-[#fce8ec] text-[#c0394b] capitalize">
+                        <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-[#dbeafe] text-[#1a6fbb] capitalize">
                           {u.role}
                         </span>
                       </td>
@@ -156,25 +199,12 @@ export default function AdminDashboard() {
                             <option value="authority">Authority</option>
                             <option value="admin">Admin</option>
                           </select>
-
                           {u.role === 'authority' && (
                             <>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => checkChainApproval(u)}
-                                className="h-7 px-2 text-xs"
-                              >
+                              <Button type="button" variant="outline" size="sm" onClick={() => checkChainApproval(u)} className="h-7 px-2 text-xs">
                                 Check Chain
                               </Button>
-                              <Button
-                                type="button"
-                                size="sm"
-                                onClick={() => approveOnChain(u)}
-                                disabled={!u.wallet_address}
-                                className="h-7 px-2 text-xs"
-                              >
+                              <Button type="button" size="sm" onClick={() => approveOnChain(u)} disabled={!u.wallet_address} className="h-7 px-2 text-xs">
                                 {chainApprovals[u.id] ? 'Approved' : 'Approve Chain'}
                               </Button>
                             </>

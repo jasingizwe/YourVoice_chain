@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { FileText, Share2, Upload, UserPlus } from 'lucide-react';
 import Brand from '@/components/Brand';
+import Footer from '@/components/Footer';
+import PublicNavbar from '@/components/PublicNavbar';
 
 const steps = [
   {
@@ -31,26 +33,14 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <div className="min-h-screen bg-[#faf8f3] font-sans">
+    <div className="min-h-screen bg-[#f0f7ff] font-sans">
 
-      {/* NAVBAR */}
-      <header className="bg-[#f9c8d4] px-6 py-4 md:px-16">
-        <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <Brand size="md" showText={false} />
-          <nav className="flex items-center gap-8 text-sm font-medium text-[#1a1a1a]">
-            <Link to="/" className="hover:text-[#c0394b] transition-colors">Home</Link>
-            <Link to="/guide/features" className="hover:text-[#c0394b] transition-colors">Features</Link>
-            <Link to="/guide/how-it-works" className="font-semibold text-[#c0394b]">How it works</Link>
-            <Link to="/resources" className="hover:text-[#c0394b] transition-colors">Resources</Link>
-            <Link to="/dashboard/cases" className="hover:text-[#c0394b] transition-colors">Cases</Link>
-          </nav>
-        </div>
-      </header>
+      <PublicNavbar activePath="/guide/how-it-works" />
 
       {/* HERO */}
-      <section className="bg-[#faf8f3] px-6 py-16 md:px-16">
+      <section className="bg-[#f0f7ff] px-6 py-16 md:px-16">
         <div className="mx-auto max-w-6xl">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#c0394b]">Guided Case Flow</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#1a6fbb]">Guided Case Flow</p>
           <h1 className="text-4xl font-bold text-[#1a1a1a] md:text-5xl">How YourVoice works</h1>
           <p className="mt-3 max-w-xl text-[#555]">
             Follow these steps to submit, protect, and monitor your case from one place.
@@ -65,12 +55,12 @@ export default function HowItWorks() {
             {steps.map((step) => (
               <div
                 key={step.title}
-                className="rounded-2xl border border-[#e8e2da] bg-[#faf8f3] p-6 shadow-sm"
+                className="rounded-2xl border border-[#e8e2da] bg-[#f0f7ff] p-6 shadow-sm"
               >
-                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#f9c8d4]">
-                  <step.icon className="h-7 w-7 text-[#c0394b]" />
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#bee3f8]">
+                  <step.icon className="h-7 w-7 text-[#1a6fbb]" />
                 </div>
-                <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[#c0394b]">{step.step}</p>
+                <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[#1a6fbb]">{step.step}</p>
                 <h2 className="text-lg font-bold text-[#1a1a1a]">{step.title}</h2>
                 <p className="mt-2 text-sm leading-relaxed text-[#666]">{step.description}</p>
               </div>
@@ -80,25 +70,7 @@ export default function HowItWorks() {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-[#111] px-6 py-12 md:px-16">
-        <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-[2fr_1fr]">
-          <div>
-            <Brand linkTo="/" className="opacity-90" />
-            <p className="mt-2 text-sm text-[#aaa] leading-relaxed">
-              A survivor-centred platform for secure GBV case documentation and management.
-            </p>
-          </div>
-          <div>
-            <p className="mb-3 text-sm font-semibold text-white">Quick Links</p>
-            <ul className="space-y-2 text-sm text-[#aaa]">
-              <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
-              <li><Link to="/guide/features" className="hover:text-white transition-colors">Features</Link></li>
-              <li><Link to="/guide/how-it-works" className="hover:text-white transition-colors">How it works</Link></li>
-              <li><Link to="/resources" className="hover:text-white transition-colors">Resources</Link></li>
-            </ul>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
     </div>
   );

@@ -60,8 +60,8 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fdf2f8] flex items-center justify-center p-4">
-      <div className="w-full max-w-md rounded-[24px] border border-[#fbcfe8] bg-white p-7 shadow-[0_22px_40px_-30px_rgba(192,57,75,0.15)]">
+    <div className="min-h-screen bg-[#f0f7ff] flex items-center justify-center p-4">
+      <div className="w-full max-w-md rounded-[24px] border border-[#bfdbfe] bg-white p-7 shadow-[0_22px_40px_-30px_rgba(26,111,187,0.15)]">
         <div className="mb-6 text-center">
           <div className="mb-3 flex justify-center">
             <Brand size="lg" showText={false} />
@@ -78,7 +78,7 @@ export default function ResetPassword() {
               onChange={e => setToken(e.target.value)}
               placeholder="Paste reset token"
               required
-              className="mt-1 border-[#fbcfe8] focus-visible:ring-[#c0394b]"
+              className="mt-1 border-[#bfdbfe] focus-visible:ring-[#1a6fbb]"
             />
           </div>
 
@@ -93,12 +93,12 @@ export default function ResetPassword() {
                 placeholder="********"
                 required
                 minLength={6}
-                className="border-[#fbcfe8] pr-10 focus-visible:ring-[#c0394b]"
+                className="border-[#bfdbfe] pr-10 focus-visible:ring-[#1a6fbb]"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#aaa] hover:text-[#c0394b]"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#aaa] hover:text-[#1a6fbb]"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -115,13 +115,13 @@ export default function ResetPassword() {
               placeholder="********"
               required
               minLength={6}
-              className="mt-1 border-[#fbcfe8] focus-visible:ring-[#c0394b]"
+              className="mt-1 border-[#bfdbfe] focus-visible:ring-[#1a6fbb]"
             />
           </div>
 
           <Button
             type="submit"
-            className="w-full rounded-lg bg-[#c0394b] text-white hover:bg-[#a8303f]"
+            className="w-full rounded-lg bg-[#1a6fbb] text-white hover:bg-[#155fa0]"
             disabled={submitting}
           >
             {submitting ? 'Updating...' : 'Update Password'}

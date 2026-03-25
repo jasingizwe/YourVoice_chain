@@ -218,7 +218,7 @@ export default function NewCase() {
                   <button
                     type="button"
                     onClick={() => removeFile(index)}
-                    className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -245,7 +245,7 @@ export default function NewCase() {
         </div>
 
         <div className="flex gap-3 pt-2">
-          <Button type="submit" disabled={submitting} className="rounded-full bg-[#c0394b] text-white hover:bg-[#a8303f]">
+          <Button type="submit" disabled={submitting} className="rounded-full bg-[#1a6fbb] text-white hover:bg-[#155fa0]">
             {submitting ? 'Submitting...' : 'Submit Case'}
           </Button>
           <Link to="/dashboard/cases">

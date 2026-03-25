@@ -19,6 +19,7 @@ import CaseDetail from "./pages/dashboard/CaseDetail";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import AuditLogPage from "./pages/dashboard/AuditLogPage";
 import NotFound from "./pages/NotFound";
+import TermsPage from "./pages/TermsPage";
 import { ReactNode } from "react";
 import ThemeToggle from "./components/ThemeToggle";
 
@@ -73,6 +74,7 @@ const App = () => (
             <Route path="/guide/features" element={<ProtectedRoute><Benefits /></ProtectedRoute>} />
             <Route path="/guide/how-it-works" element={<ProtectedRoute><HowItWorks /></ProtectedRoute>} />
             <Route path="/resources" element={<Resources />} />
+            <Route path="/terms" element={<TermsPage />} />
             <Route path="/dashboard/*" element={<DashboardRoutes />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -343,7 +343,7 @@ export default function CaseDetail() {
           {/* Header */}
           <div className="flex items-center justify-between border-b border-[#f2ede8] px-5 py-3">
             <div className="flex items-center gap-2 min-w-0">
-              <FileText className="h-4 w-4 shrink-0 text-[#c0394b]" />
+              <FileText className="h-4 w-4 shrink-0 text-[#1a6fbb]" />
               <span className="truncate text-sm font-medium text-[#1a1a1a]">
                 {previewEvidence.file_name || 'Evidence file'}
               </span>
@@ -353,13 +353,13 @@ export default function CaseDetail() {
                 href={url}
                 target="_blank"
                 rel="noreferrer"
-                className="text-xs text-[#c0394b] hover:underline"
+                className="text-xs text-[#1a6fbb] hover:underline"
               >
                 Open in new tab
               </a>
               <button
                 onClick={() => setPreviewEvidence(null)}
-                className="rounded-full p-1 hover:bg-[#fce8ec] transition-colors"
+                className="rounded-full p-1 hover:bg-[#dbeafe] transition-colors"
               >
                 <X className="h-4 w-4 text-[#1a1a1a]" />
               </button>
@@ -367,7 +367,7 @@ export default function CaseDetail() {
           </div>
 
           {/* Content */}
-          <div className="flex items-center justify-center bg-[#faf8f3] p-4" style={{ minHeight: 400, maxHeight: '75vh' }}>
+          <div className="flex items-center justify-center bg-[#f0f7ff] p-4" style={{ minHeight: 400, maxHeight: '75vh' }}>
             {isImage ? (
               <img
                 src={url}
@@ -382,13 +382,13 @@ export default function CaseDetail() {
               />
             ) : (
               <div className="text-center">
-                <FileText className="mx-auto mb-3 h-12 w-12 text-[#c0394b]" />
+                <FileText className="mx-auto mb-3 h-12 w-12 text-[#1a6fbb]" />
                 <p className="text-sm text-[#666]">Preview not available for this file type.</p>
                 <a
                   href={url}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-3 inline-block text-sm font-semibold text-[#c0394b] hover:underline"
+                  className="mt-3 inline-block text-sm font-semibold text-[#1a6fbb] hover:underline"
                 >
                   Download file
                 </a>
@@ -453,7 +453,7 @@ export default function CaseDetail() {
                 </Button>
               </>
             )}
-            <span className="inline-flex items-center gap-1 rounded-full bg-[#fce8ec] px-3 py-1 text-xs font-medium text-[#c0394b]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-[#dbeafe] px-3 py-1 text-xs font-medium text-[#1a6fbb]">
               <Clock className="h-3 w-3" />
               {caseData.status.replace('_', ' ')}
             </span>
@@ -537,7 +537,7 @@ export default function CaseDetail() {
                     variant="ghost"
                     size="sm"
                     onClick={() => setPreviewEvidence(ev)}
-                    className="gap-1 text-[#c0394b]"
+                    className="gap-1 text-[#1a6fbb]"
                   >
                     <Eye className="h-3.5 w-3.5" /> Preview
                   </Button>
@@ -559,13 +559,14 @@ export default function CaseDetail() {
           </div>
         )}
         {(isSurvivorOwner || role === 'admin') && (
-          <div className="mt-4 flex gap-2">
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
             <Input
               type="file"
               accept="image/*,.pdf,.doc,.docx"
               onChange={e => setEvidenceFile(e.target.files?.[0] || null)}
+              className="flex-1"
             />
-            <Button onClick={addEvidence} disabled={busy} className="gap-1">
+            <Button onClick={addEvidence} disabled={busy} className="gap-1 sm:shrink-0">
               <FileUp className="h-4 w-4" /> Add
             </Button>
           </div>
@@ -579,13 +580,13 @@ export default function CaseDetail() {
         ) : (
           <div className="space-y-2">
             {grants.filter(g => !g.revoked_at).map(g => (
-              <div key={g.id} className="flex items-center justify-between rounded-lg bg-muted/50 p-3 text-sm text-foreground">
-                <span>
+              <div key={g.id} className="flex flex-col gap-2 rounded-lg bg-muted/50 p-3 text-sm text-foreground sm:flex-row sm:items-center sm:justify-between">
+                <span className="min-w-0 break-words">
                   Authority: {g.authority_email || `${g.authority_id.slice(0, 8)}...`} · Granted {new Date(g.granted_at).toLocaleDateString()}
                   {g.grant_tx ? ' · On-chain recorded' : ''}
                 </span>
                 {canManageAccess && (
-                  <Button variant="ghost" size="sm" onClick={() => revokeGrant(g.id)} className="gap-1 text-destructive">
+                  <Button variant="ghost" size="sm" onClick={() => revokeGrant(g.id)} className="gap-1 text-destructive self-start sm:self-auto sm:shrink-0">
                     <UserMinus className="h-3.5 w-3.5" /> Revoke
                   </Button>
                 )}
@@ -594,13 +595,14 @@ export default function CaseDetail() {
           </div>
         )}
         {canManageAccess && (
-          <div className="mt-4 flex gap-2">
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
             <Input
               placeholder="Authority email"
               value={authorityEmail}
               onChange={e => setAuthorityEmail(e.target.value)}
+              className="flex-1"
             />
-            <Button onClick={grantAccess} disabled={busy} className="gap-1">
+            <Button onClick={grantAccess} disabled={busy} className="gap-1 sm:shrink-0">
               <UserPlus className="h-4 w-4" /> Grant
             </Button>
           </div>
@@ -624,14 +626,15 @@ export default function CaseDetail() {
           </div>
         )}
         {canAddNotes && (
-          <div className="mt-4 flex gap-2">
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-end">
             <Textarea
               placeholder="Add note"
               rows={2}
               value={noteContent}
               onChange={e => setNoteContent(e.target.value)}
+              className="flex-1"
             />
-            <Button onClick={addNote} disabled={busy} className="self-end">Add</Button>
+            <Button onClick={addNote} disabled={busy} className="sm:shrink-0">Add</Button>
           </div>
         )}
       </div>

@@ -39,7 +39,7 @@ export default function AuditLogPage() {
         <div className="space-y-2">
           {logs.map(log => (
             <div key={log.id} className="rounded-lg border border-[#e8dde4] bg-white p-4 flex items-center gap-4">
-              <div className="w-2 h-2 rounded-full bg-[#c0394b] flex-shrink-0" />
+              <div className="w-2 h-2 rounded-full bg-[#1a6fbb] flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground">
                   {actionLabels[log.action] || log.action}

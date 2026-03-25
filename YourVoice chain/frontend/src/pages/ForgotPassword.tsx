@@ -51,8 +51,8 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fdf2f8] flex items-center justify-center p-4">
-      <div className="w-full max-w-md rounded-[24px] border border-[#fbcfe8] bg-white p-7 shadow-[0_22px_40px_-30px_rgba(192,57,75,0.15)]">
+    <div className="min-h-screen bg-[#f0f7ff] flex items-center justify-center p-4">
+      <div className="w-full max-w-md rounded-[24px] border border-[#bfdbfe] bg-white p-7 shadow-[0_22px_40px_-30px_rgba(26,111,187,0.15)]">
         <div className="mb-6 text-center">
           <div className="mb-3 flex justify-center">
             <Brand size="lg" showText={false} />
@@ -68,7 +68,7 @@ export default function ForgotPassword() {
               If your account exists, reset instructions were generated for <span className="font-medium text-[#1a1a1a]">{email}</span>.
             </p>
             <Link to="/auth?mode=login">
-              <Button variant="outline" size="sm" className="gap-2 rounded-lg border-[#fbcfe8] text-[#c0394b] hover:bg-[#fce8ec]">
+              <Button variant="outline" size="sm" className="gap-2 rounded-lg border-[#bfdbfe] text-[#1a6fbb] hover:bg-[#dbeafe]">
                 <ArrowLeft className="h-4 w-4" /> Back to Log In
               </Button>
             </Link>
@@ -84,18 +84,18 @@ export default function ForgotPassword() {
                 onChange={e => setEmail(e.target.value)}
                 placeholder="your@email.com"
                 required
-                className="mt-1 border-[#fbcfe8] focus-visible:ring-[#c0394b]"
+                className="mt-1 border-[#bfdbfe] focus-visible:ring-[#1a6fbb]"
               />
             </div>
             <Button
               type="submit"
-              className="w-full rounded-lg bg-[#c0394b] text-white hover:bg-[#a8303f]"
+              className="w-full rounded-lg bg-[#1a6fbb] text-white hover:bg-[#155fa0]"
               disabled={submitting}
             >
               {submitting ? 'Sending...' : 'Send Reset Link'}
             </Button>
             <p className="text-center text-sm text-[#888]">
-              <Link to="/auth?mode=login" className="font-medium text-[#c0394b] hover:underline">
+              <Link to="/auth?mode=login" className="font-medium text-[#1a6fbb] hover:underline">
                 Back to Log In
               </Link>
             </p>
