@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find '/c/Users/HP/OneDrive/Desktop/YourVoice chain' -name .env* -o -name *.env*)",
+      "Bash(find 'c:\\\\Users\\\\HP\\\\OneDrive\\\\Desktop\\\\YourVoice chain/frontend/src' -type f \\\\\\(-name *.tsx -o -name *.ts \\\\\\))",
+      "Bash(find 'c:\\\\Users\\\\HP\\\\OneDrive\\\\Desktop\\\\YourVoice chain/backend' -type f \\\\\\(-name *.ts -o -name *.js \\\\\\))",
+      "Bash(find 'c:\\\\Users\\\\HP\\\\OneDrive\\\\Desktop\\\\YourVoice chain/backend' -type f -name *.ts)",
+      "Bash(find 'c:\\\\Users\\\\HP\\\\OneDrive\\\\Desktop\\\\YourVoice chain/server' -type f -name *.ts)",
+      "Bash(file \"c:\\\\Users\\\\HP\\\\OneDrive\\\\Desktop\\\\YourVoice chain\\\\frontend\\\\public\"/*)",
+      "Bash(grep -r \"Lovable\\\\|lovable\\\\|v0\\\\|Cursor\" 'c:\\\\Users\\\\HP\\\\OneDrive\\\\Desktop\\\\YourVoice chain' --include=*.tsx --include=*.ts --include=*.jsx --include=*.js --exclude-dir=node_modules --exclude-dir=dist)",
+      "Bash(grep -r \"powered by\\\\|made with\\\\|built by\\\\|created by\" 'c:\\\\Users\\\\HP\\\\OneDrive\\\\Desktop\\\\YourVoice chain' -i --include=*.html --include=*.tsx --include=*.ts --include=*.jsx --include=*.js --exclude-dir=node_modules --exclude-dir=dist)"
+    ]
+  }
+}

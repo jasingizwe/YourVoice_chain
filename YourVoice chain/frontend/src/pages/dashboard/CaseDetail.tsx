@@ -373,6 +373,14 @@ export default function CaseDetail() {
                 src={url}
                 alt={previewEvidence.file_name || 'Evidence'}
                 className="max-h-[65vh] max-w-full rounded-lg object-contain shadow"
+                onError={e => {
+                  const target = e.currentTarget;
+                  target.style.display = 'none';
+                  const msg = document.createElement('div');
+                  msg.className = 'text-center';
+                  msg.innerHTML = `<p class="text-sm text-[#666]">Image could not be loaded. The file may not have been uploaded to IPFS.</p><a href="${url}" target="_blank" rel="noreferrer" class="mt-3 inline-block text-sm font-semibold text-[#1a6fbb] hover:underline">Try opening directly</a>`;
+                  target.parentElement?.appendChild(msg);
+                }}
               />
             ) : isPdf ? (
               <iframe
