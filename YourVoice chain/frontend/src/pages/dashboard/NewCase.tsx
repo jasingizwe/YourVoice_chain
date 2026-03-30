@@ -104,14 +104,16 @@ export default function NewCase() {
           if (!uploadRes.ok) throw new Error(uploadPayload?.error || 'Evidence upload failed');
 
           const evidence = uploadPayload?.item;
-          if (evidence?.id && evidence?.ipfs_hash && hasBlockchainConfig() && !chainCaseCreated) {
+          if (evidence?.id && evidence?.ipfs_hash && hasBlockchainConfig()) {
             try {
               const chain = await createCaseOnChain(evidence.ipfs_hash);
-              chainCaseCreated = true;
-              await apiRequest(`/cases/${item.id}/onchain`, {
-                method: 'PATCH',
-                body: JSON.stringify({ onchainCaseId: chain.onchainCaseId, txHash: chain.txHash }),
-              });
+              if (!chainCaseCreated) {
+                chainCaseCreated = true;
+                await apiRequest(`/cases/${item.id}/onchain`, {
+                  method: 'PATCH',
+                  body: JSON.stringify({ onchainCaseId: chain.onchainCaseId, txHash: chain.txHash }),
+                });
+              }
               if (chain.txHash) {
                 await apiRequest(`/cases/${item.id}/evidence/${evidence.id}/tx`, {
                   method: 'PATCH',

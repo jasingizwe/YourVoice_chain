@@ -256,18 +256,18 @@ export default function CaseDetail() {
       const evidenceRow = payload?.item as Evidence | undefined;
       if (evidenceRow?.id && evidenceRow.ipfs_hash && hasBlockchainConfig()) {
         try {
+          const chain = await createCaseOnChain(evidenceRow.ipfs_hash);
           if (!caseData?.onchain_case_id) {
-            const chain = await createCaseOnChain(evidenceRow.ipfs_hash);
             await apiRequest(`/cases/${id}/onchain`, {
               method: 'PATCH',
               body: JSON.stringify({ onchainCaseId: chain.onchainCaseId, txHash: chain.txHash }),
             });
-            if (chain.txHash) {
-              await apiRequest(`/cases/${id}/evidence/${evidenceRow.id}/tx`, {
-                method: 'PATCH',
-                body: JSON.stringify({ txHash: chain.txHash }),
-              });
-            }
+          }
+          if (chain.txHash) {
+            await apiRequest(`/cases/${id}/evidence/${evidenceRow.id}/tx`, {
+              method: 'PATCH',
+              body: JSON.stringify({ txHash: chain.txHash }),
+            });
           }
         } catch {
           // evidence still saved
