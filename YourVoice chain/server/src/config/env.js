@@ -8,7 +8,7 @@ export const env = {
   DATABASE_URL: process.env.DATABASE_URL ?? '',
   JWT_SECRET: process.env.JWT_SECRET ?? '',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN ?? '7d',
-  PINATA_JWT: process.env.PINATA_JWT ?? '',
+  PINATA_JWT: (process.env.PINATA_JWT ?? '').trim(),
   API_JSON_LIMIT: process.env.API_JSON_LIMIT ?? '512kb',
   API_FORM_LIMIT: process.env.API_FORM_LIMIT ?? '256kb',
   GLOBAL_RATE_WINDOW_MS: Number(process.env.GLOBAL_RATE_WINDOW_MS ?? 15 * 60 * 1000),
