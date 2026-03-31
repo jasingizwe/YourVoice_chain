@@ -8,6 +8,7 @@ import { requireAuth } from '../middleware/auth.js';
 import { logAudit } from '../services/audit.js';
 import { makeLocalHash, pinFileAndGetCid } from '../services/ipfs.js';
 import { env } from '../config/env.js';
+import { logWarn } from '../services/logger.js';
 
 const createCaseSchema = z.object({
   title: z.string().min(3),
@@ -435,6 +436,7 @@ casesRouter.post('/:id/evidence', upload.single('file'), async (req, res, next) 
         ipfsAttempts = 1;
         ipfsLastError = err?.message || 'IPFS upload failed';
         ipfsErrorForAudit = ipfsLastError;
+        logWarn('IPFS upload failed', { fileName, error: ipfsLastError });
       }
     } else {
       const input = createEvidenceSchema.parse(req.body);

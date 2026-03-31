@@ -257,7 +257,7 @@ export default function CaseDetail() {
       if (evidenceRow?.id && evidenceRow.ipfs_hash && hasBlockchainConfig()) {
         try {
           const chain = await createCaseOnChain(evidenceRow.ipfs_hash);
-          if (!caseData?.onchain_case_id) {
+          if (!caseData?.onchain_case_id && chain.onchainCaseId) {
             await apiRequest(`/cases/${id}/onchain`, {
               method: 'PATCH',
               body: JSON.stringify({ onchainCaseId: chain.onchainCaseId, txHash: chain.txHash }),
