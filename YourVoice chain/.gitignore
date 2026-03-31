@@ -29,3 +29,4 @@ dist-ssr
 *.sw?
 uploads/
 server/uploads/
+.claude/
