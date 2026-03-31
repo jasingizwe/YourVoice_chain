@@ -7,6 +7,7 @@ import { pool } from '../db/pool.js';
 import { env } from '../config/env.js';
 import { requireAuth } from '../middleware/auth.js';
 import { logAudit } from '../services/audit.js';
+import { sendMail } from '../services/email.js';
 
 const passwordPolicyMessage =
   'Password must be at least 10 chars and include uppercase, lowercase, number, and symbol';
@@ -231,6 +232,37 @@ authRouter.post('/forgot-password', async (req, res, next) => {
       userId,
       action: 'password_reset_requested',
       details: null,
+    });
+
+    const resetLink = `${env.APP_URL}/reset-password?token=${rawToken}`;
+    await sendMail({
+      to: email,
+      subject: 'YourVoice — Reset your password',
+      html: `
+        <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; color: #1a1a1a;">
+          <div style="background: #f9c8d4; padding: 24px 32px; border-radius: 12px 12px 0 0;">
+            <h1 style="margin: 0; font-size: 22px; color: #1a1a1a;">YourVoice</h1>
+          </div>
+          <div style="background: #ffffff; padding: 32px; border: 1px solid #fbcfe8; border-top: none; border-radius: 0 0 12px 12px;">
+            <h2 style="margin-top: 0; font-size: 18px;">Reset your password</h2>
+            <p style="color: #555; line-height: 1.6;">
+              We received a request to reset your password. Click the button below to choose a new one.
+              This link expires in <strong>30 minutes</strong>.
+            </p>
+            <a href="${resetLink}"
+               style="display: inline-block; margin-top: 8px; background: #c0394b; color: #ffffff;
+                      text-decoration: none; padding: 12px 28px; border-radius: 8px; font-weight: 600;">
+              Reset Password
+            </a>
+            <p style="margin-top: 24px; color: #555; line-height: 1.6;">
+              If you did not request a password reset, you can safely ignore this email.
+            </p>
+            <p style="margin-top: 32px; font-size: 12px; color: #999;">
+              This link will expire in 30 minutes for your security.
+            </p>
+          </div>
+        </div>
+      `,
     });
 
     const payload = { ok: true };

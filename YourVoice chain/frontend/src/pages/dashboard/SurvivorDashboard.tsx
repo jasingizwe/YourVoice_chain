@@ -183,17 +183,17 @@ export default function SurvivorDashboard() {
           <div className="relative flex items-center gap-2">
             <button
               type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#ddd8cd] bg-white/85 text-[#4f5358]"
+              className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#ddd8cd] bg-white/85 text-[#4f5358]"
               onClick={() => setShowNotifications(prev => !prev)}
               aria-label="Notifications"
             >
               <Bell className="h-4 w-4" />
+              {unreadCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#1a6fbb] text-[10px] font-bold text-white">
+                  {unreadCount}
+                </span>
+              )}
             </button>
-            {unreadCount > 0 && (
-              <span className="absolute -right-1 -top-1 rounded-full bg-[#1a6fbb] px-1.5 py-0.5 text-[10px] text-white">
-                {unreadCount}
-              </span>
-            )}
             <Link to="/dashboard/cases/new">
               <Button className="rounded-full bg-[#1a6fbb] px-5 text-white hover:bg-[#155fa0]">
                 <Plus className="mr-2 h-4 w-4" />
@@ -216,7 +216,7 @@ export default function SurvivorDashboard() {
                     </button>
                   </div>
                 </div>
-                <div className="space-y-3">
+                <div className="max-h-80 overflow-y-auto space-y-3 pr-1">
                   {notifications.length === 0 ? (
                     <div className="rounded-xl border border-[#eee8db] bg-[#fdfbf6] p-3 text-sm text-[#6d6f69]">
                       No notifications yet.
@@ -231,9 +231,9 @@ export default function SurvivorDashboard() {
                       >
                         <div className="flex items-start justify-between gap-2">
                           <p className="text-sm font-medium text-[#22262b]">{item.title}</p>
-                          <span className="text-xs text-[#888b84]">{new Date(item.created_at).toLocaleDateString()}</span>
+                          <span className="shrink-0 text-xs text-[#888b84]">{new Date(item.created_at).toLocaleDateString()}</span>
                         </div>
-                        <p className="mt-1 text-xs text-[#6d6f69]">{item.message}</p>
+                        <p className="mt-1 text-xs text-[#6d6f69] break-words">{item.message}</p>
                       </button>
                     ))
                   )}
