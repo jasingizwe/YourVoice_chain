@@ -217,16 +217,25 @@ authRouter.post('/forgot-password', async (req, res, next) => {
     }
 
     const userId = found.rows[0].id;
-    await pool.query('update password_resets set used_at = now() where user_id = $1 and used_at is null', [userId]);
-
     const rawToken = crypto.randomBytes(32).toString('hex');
     const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
 
-    await pool.query(
-      `insert into password_resets (user_id, token_hash, expires_at)
-       values ($1, $2, now() + interval '30 minutes')`,
-      [userId, tokenHash],
-    );
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query('update password_resets set used_at = now() where user_id = $1 and used_at is null', [userId]);
+      await client.query(
+        `insert into password_resets (user_id, token_hash, expires_at)
+         values ($1, $2, now() + interval '30 minutes')`,
+        [userId, tokenHash],
+      );
+      await client.query('COMMIT');
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
 
     await logAudit({
       userId,

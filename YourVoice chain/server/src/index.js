@@ -3,6 +3,17 @@ import { env } from './config/env.js';
 import { logError, logInfo } from './services/logger.js';
 import { startIpfsRetryLoop } from './services/ipfsRetry.js';
 
+// Fail fast in production if critical env vars are missing
+if (env.NODE_ENV === 'production') {
+  const required = { JWT_SECRET: env.JWT_SECRET, DATABASE_URL: env.DATABASE_URL };
+  for (const [key, val] of Object.entries(required)) {
+    if (!val) {
+      console.error(`FATAL: ${key} environment variable is not set. Exiting.`);
+      process.exit(1);
+    }
+  }
+}
+
 const app = createApp();
 
 const server = app.listen(env.PORT, () => {

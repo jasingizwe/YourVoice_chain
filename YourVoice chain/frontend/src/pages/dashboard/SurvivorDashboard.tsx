@@ -16,6 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import type { Case, NotificationItem } from '@/lib/types';
 import { apiRequest } from '@/lib/api';
+import { useToast } from '@/hooks/use-toast';
 
 const statusConfig = {
   pending: {
@@ -37,6 +38,7 @@ const statusConfig = {
 
 export default function SurvivorDashboard() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [cases, setCases] = useState<Case[]>([]);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,6 +54,9 @@ export default function SurvivorDashboard() {
       .then(([caseRes, notificationRes]) => {
         setCases(caseRes.items || []);
         setNotifications(notificationRes.items || []);
+      })
+      .catch(() => {
+        toast({ title: 'Error', description: 'Could not load dashboard data. Please refresh.', variant: 'destructive' });
       })
       .finally(() => setLoading(false));
   }, [user]);
