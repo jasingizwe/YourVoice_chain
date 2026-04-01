@@ -94,6 +94,7 @@ export default function SurvivorDashboard() {
   const completion = stats.total ? Math.round((stats.closed / stats.total) * 100) : 0;
   const hasMetaMask = typeof window !== 'undefined' && !!window.ethereum;
   const [guideOpen, setGuideOpen] = useState(false);
+  const [search, setSearch] = useState('');
 
   const steps = [
     {
@@ -272,8 +273,14 @@ export default function SurvivorDashboard() {
             <div className="mb-4 flex items-center justify-between gap-2">
               <h2 className="text-lg font-heading font-medium text-[#1f2328]">Recent Cases</h2>
               <div className="inline-flex items-center gap-2 rounded-full border border-[#e2dccf] bg-white px-3 py-1.5 text-xs text-[#666860]">
-                <Search className="h-3.5 w-3.5" />
-                Search
+                <Search className="h-3.5 w-3.5 shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Search cases..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="bg-transparent outline-none placeholder-[#aaa] text-[#1f2328] w-32"
+                />
               </div>
             </div>
 
@@ -286,7 +293,7 @@ export default function SurvivorDashboard() {
               </div>
             ) : (
               <div className="space-y-3">
-                {cases.slice(0, 5).map(c => {
+                {cases.filter(c => c.title.toLowerCase().includes(search.toLowerCase()) || c.description?.toLowerCase().includes(search.toLowerCase())).slice(0, 5).map(c => {
                   const status = statusConfig[c.status];
                   const StatusIcon = status.icon;
 
