@@ -21,7 +21,6 @@ import AuditLogPage from "./pages/dashboard/AuditLogPage";
 import NotFound from "./pages/NotFound";
 import TermsPage from "./pages/TermsPage";
 import { ReactNode } from "react";
-import ThemeToggle from "./components/ThemeToggle";
 
 const queryClient = new QueryClient();
 
@@ -62,7 +61,6 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <ThemeToggle />
       <BrowserRouter>
         <AuthProvider>
           <Routes>
