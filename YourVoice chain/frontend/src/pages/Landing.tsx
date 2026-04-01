@@ -17,7 +17,7 @@ export default function Landing() {
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-12 md:flex-row">
           {/* Left */}
           <div className="flex-1">
-            <h1 className="text-3xl font-bold leading-tight text-[#1a1a1a] sm:text-4xl md:text-5xl lg:text-6xl">
+            <h1 className="text-5xl font-bold leading-tight text-[#1a1a1a] sm:text-6xl md:text-7xl lg:text-8xl">
               Your voice.<br />
               <span className="text-[#1a6fbb]">Your power.</span>
             </h1>
