@@ -198,6 +198,7 @@ export default function NewCase() {
             type="date"
             value={incidentDate}
             onChange={e => setIncidentDate(e.target.value)}
+            max={new Date().toISOString().split('T')[0]}
             className="mt-1 border-[#ddd8cf] bg-white"
           />
         </div>
